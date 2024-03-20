@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
+import analysis
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -26,12 +27,21 @@ CORS(app)
 
 # Sample search using json with pandas
 def json_search(query):
-    matches = []
-    merged_df = pd.merge(episodes_df, reviews_df, left_on='id', right_on='id', how='inner')
-    matches = merged_df[merged_df['title'].str.lower().str.contains(query.lower())]
-    matches_filtered = matches[['title', 'descr', 'imdb_rating']]
-    matches_filtered_json = matches_filtered.to_json(orient='records')
-    return matches_filtered_json
+    df = pd.read_csv("update_pen.csv")
+    lst_title = df["Title"]
+    title_inv_idx = analysis.build_title_inverted_index(lst_title)
+    tok_inv_idx = analysis.build_token_inverted_index(lst_title, title_inv_idx)
+    results = analysis.boolean_search(query, tok_inv_idx, len(lst_title))
+    # print(len(results))
+    matches_filtered_lst = [df.iloc[i]['Title'] for i in results]
+    # template code
+    
+    # matches = []
+    # merged_df = pd.merge(episodes_df, reviews_df, left_on='id', right_on='id', how='inner')
+    # matches = merged_df[merged_df['title'].str.lower().str.contains(query.lower())]
+    # matches_filtered = matches[['title', 'descr', 'imdb_rating']]
+    # matches_filtered_json = matches_filtered.to_json(orient='records')
+    return matches_filtered_lst
 
 @app.route("/")
 def home():
@@ -40,6 +50,7 @@ def home():
 @app.route("/episodes")
 def episodes_search():
     text = request.args.get("title")
+    print(type(text))
     return json_search(text)
 
 if 'DB_NAME' not in os.environ:
