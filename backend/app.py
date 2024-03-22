@@ -30,16 +30,16 @@ CORS(app)
 def json_search(query):
     df = pd.read_csv("compressed_df.csv")
     # # print(df)
-    print("compressed_df:")
-    print(df)
+    # print("compressed_df:")
+    # print(df)
     lst_title = df["title"]
-    title_inv_idx = analysis.build_title_inverted_index(lst_title)
+    title_inv_idx = analysis.build_doc_inverted_index(lst_title)
     tok_inv_idx = analysis.build_token_inverted_index(lst_title, title_inv_idx)
     results = analysis.boolean_search(query, tok_inv_idx, len(lst_title))
     matches_filtered = df.iloc[results]
     matches_filtered = matches_filtered[['title','author','ban_info']]
     jsonified = matches_filtered.to_json(orient='records')
-    print(jsonified)
+    # print(jsonified)
     return jsonified
 
 @app.route("/")
