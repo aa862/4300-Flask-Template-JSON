@@ -11,11 +11,16 @@
     align-items: center;
     flex-direction: column;
 }
-body{
-    background: rgb(169, 12, 12);
+#se{
+    width :100%;
+    min-height: 100%;
+    max-height: 100%;
+    
     background-image: url("./images/books.jpg");
     background-size: cover;
+
 }
+
 
 #google-c{
     
@@ -49,7 +54,7 @@ body{
     display: flex;
     align-items: center;
     font-size: 48px;
-    font-family: 'Playfair Display';
+    font-family: Montserrat;
     font-weight: 300;
 }
 
@@ -91,7 +96,6 @@ body{
 #answer-box{
     width: 700px;
     margin-top:50px; 
-    background: whitesmoke;
 }
 
 #searchboxes{
