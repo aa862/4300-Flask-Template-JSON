@@ -9,7 +9,7 @@ File for putting analysis related functions
 # treebank_tokenizer = TreeBankWordTokenizer()
 
 def tokenize(text: str):
-    print(text)
+    # print(text)
     low_text = text.lower()
     pattern = r'[a-z]+'
     word_list = re.findall(pattern, low_text)
@@ -85,20 +85,23 @@ def build_token_inverted_index(title_lst: list, title_inv_idx: dict) -> dict:
     return token_inv_idx
 
 
-def boolean_search(query, token_inv_idx : dict, lst_len : int):
-  """Search the collection of documents for the given query_word
-      provided that the documents do not include the not_word
+def boolean_search(query, token_inv_idx : dict, num_docs : int):
+  """Search the collection of documents that contain each token
+    of the given query for the given query.
 
   Arguments
   =========
 
-  query_word: string,
+  query: string,
       The word we are searching for in our documents.
 
-  not_word: string,
-      The word excluded from our documents.
+  token_inv_idx: dict,
+      For each term, the index contains
+      a sorted list of tuples (doc_id, count_of_term_in_doc)
+      such that tuples with smaller doc_ids appear first:
+      inverted_index[term] = [(d1, tf1), (d2, tf2), ...]
 
-  index: an inverted index as above
+  num_docs: the number of documents.
 
 
   Returns
@@ -112,17 +115,17 @@ def boolean_search(query, token_inv_idx : dict, lst_len : int):
   """
   # print(type(query))
   query_tok = tokenize(query)
-  results = set(range(1,lst_len))
-  print("RESULTS: " + str(results))
+  results = set(range(1,num_docs))
+  # print("RESULTS: " + str(results))
   # print(len(query_tok))
   # print(query_tok)
   for tok in query_tok:
     #  print(tok)
     #  print(set(token_inv_idx[tok]))
-    print(token_inv_idx[tok])
+    # print(token_inv_idx[tok])
     results = results.intersection(set(token_inv_idx[tok]))
-    print(len(results))
-  return results
+    # print(len(results))
+  return list(results)
 
 
 def get_sim(mov1, mov2):
