@@ -11,9 +11,17 @@
     align-items: center;
     flex-direction: column;
 }
+body{
+    background: rgb(169, 12, 12);
+    background-image: url("./images/books.jpg");
+    background-size: cover;
+}
 
 #google-c{
+    
     color:#4285F4;
+    
+    
 }
 
 #google-s{
@@ -22,6 +30,7 @@
 
 #google-4{
     color:	#F4B400;
+    color:black
 }
 
 #google-3{
@@ -40,7 +49,8 @@
     display: flex;
     align-items: center;
     font-size: 48px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Playfair Display';
+    font-weight: 300;
 }
 
 .google-colors h1{
@@ -53,9 +63,9 @@
     border:1px solid black;
     display: flex;
     align-items: center;
-    margin-top: 10px;
+    margin: 10px;
     padding:12px;
-    width: 600px;
+    width: 300px;
 }
 
 .input-box img{
@@ -71,16 +81,36 @@
 
 .input-box input{
     width: 100%;
-    margin-left: 10px;
     font-size: 16px;
     border: none;
     outline: 0;
+    color: white;
+    
 }
 
 #answer-box{
     width: 700px;
     margin-top:50px; 
+    background: whitesmoke;
 }
+
+#searchboxes{
+    display:flex;
+    flex-direction: row;
+    align-content: space-between;
+
+}
+
+
+#filter-text-val{
+    background: none;
+    color : black;
+}
+
+::placeholder {
+    color: black;
+    opacity: 1; /* Firefox */
+  }
 
 .episode-title{
     font-family: 'Kanit', sans-serif;
