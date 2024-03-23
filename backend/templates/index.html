@@ -27,11 +27,12 @@
 
     <script>
 
-        function answerBoxTemplate(title, author, ban_info) {
+        function answerBoxTemplate(title, authors, ban_info, summary) {
             return `<div class=''>
                 <h3 class='episode-title'>${title}</h3>
-                <p class='episode-desc'>${author}</p>
+                <p class='episode-desc'>${authors}</p>
                 <p class='episode-rating'>Ban Info: ${ban_info}</p>
+                <p class='episode-rating'>Blurb: ${summary}</p>
             </div>`
         }
 
@@ -45,9 +46,8 @@
             fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
-                    console.log(row);
                     let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.author, row.ban_info)
+                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
 

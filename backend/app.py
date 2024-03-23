@@ -27,19 +27,29 @@ app = Flask(__name__)
 CORS(app)
 
 # Sample search using json with pandas
-def json_search(query):
-    df = pd.read_csv("compressed_df.csv")
+def title_search(query):
+    df = pd.read_csv("final1.csv")
     # # print(df)
     # print("compressed_df:")
     # print(df)
-    lst_title = df["title"]
-    title_inv_idx = analysis.build_doc_inverted_index(lst_title)
-    tok_inv_idx = analysis.build_token_inverted_index(lst_title, title_inv_idx)
-    results = analysis.boolean_search(query, tok_inv_idx, len(lst_title))
-    matches_filtered = df.iloc[results]
-    matches_filtered = matches_filtered[['title','author','ban_info']]
-    jsonified = matches_filtered.to_json(orient='records')
+    # lst_title = df["title"]
+    nan_variable = "summary"
+    df_cleaned = df[nan_variable].fillna('')
+    lst_blurb = df_cleaned
+    # pd_title = df['title']
+    # merged_pd = df.merge[pd_title]
+    # title_inv_idx = analysis.build_doc_inverted_index(lst_title)
+    # tok_inv_idx = analysis.build_token_inverted_index(lst_title, title_inv_idx)
+    # results = analysis.boolean_search(query, tok_inv_idx, len(lst_title))
+    # matches_filtered = df.iloc[results]
+    # matches_filtered = matches_filtered[['title','author','ban_info']]
+    # jsonified = matches_filtered.to_json(orient='records')
     # print(jsonified)
+
+    cossim_results = analysis.get_doc_rankings(query, lst_blurb)
+    matches_filtered = df.iloc[cossim_results]
+    matches_filtered = matches_filtered[['title','authors','ban_info', 'summary']]
+    jsonified = matches_filtered.to_json(orient='records')
     return jsonified
 
 @app.route("/")
@@ -50,7 +60,7 @@ def home():
 def episodes_search():
     text = request.args.get("title")
     # print(type(text))
-    return json_search(text)
+    return title_search(text)
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
