@@ -9,23 +9,23 @@
 <body>
     <div class="full-body-container">
         <div id="s12"></div>
-        <div class="top-text" id = "se">
+        <div class="top-text" id="se">
             <div class="google-colors">
                 <h1 id="google-4">Censored Books</h1>
-                
-            </div>
-        <div id = "searchboxes"> 
-            <div class="input-box" onclick="sendFocus()">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for the title of a banned book" id="filter-text-val" onkeyup="filterText()">
-            </div>
-           
-            <div class="input-box" onclick="sendFocus()">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a theme or topic" id="filter-text-val" onkeyup="filterText()">
-        </div>
 
-        </div>
+            </div>
+            <div id="searchboxes">
+                <div class="input-box" onclick="sendFocus('filter-title-val')">
+                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                    <input placeholder="Search for the title of a banned book" id="filter-title-val"
+                        onkeyup="filterTitles()">
+                </div>
+
+                <div class="input-box" onclick="sendFocus('filter-book-val')">
+                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                    <input placeholder="Search for a theme or topic" id="filter-book-val" onkeyup="filterBooks()">
+                </div>
+            </div>
 
         </div>
         <div id="answer-box">
@@ -44,19 +44,38 @@
             </div>`
         }
 
-        function sendFocus() {
-            document.getElementById('filter-text-val').focus()
+        function sendFocus(id) {
+            document.getElementById(id).focus()
         }
 
-        function filterText() {
-            document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+        function filterTitles() {
+            document.getElementById("answer-box").innerHTML = "No results."
+            console.log(document.getElementById("filter-title-val").value)
+            fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
                     let tempDiv = document.createElement("div")
                     tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                    if (document.getElementById("answer-box").innerHTML == "No results.") {
+                        document.getElementById("answer-box").innerHTML = ""
+                    }
                     document.getElementById("answer-box").appendChild(tempDiv)
+                }));
+
+        }
+
+        function filterBooks() {
+            document.getElementById("answer-box").innerHTML = "No results."
+            console.log(document.getElementById("filter-book-val").value)
+            fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
+                .then((response) => response.json())
+                .then((data) => data.forEach(row => {
+                    let tempDiv = document.createElement("div")
+                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                    if (document.getElementById("answer-box").innerHTML == "No results.") {
+                        document.getElementById("answer-box").innerHTML = ""
+                    }
+                    document.getElementById("answer-box").appendChild(tempDiv);
                 }));
 
         }

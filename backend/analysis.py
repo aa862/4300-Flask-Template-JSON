@@ -382,7 +382,7 @@ def get_doc_rankings(query, doc_lst):
   # query_counts = word_counts(query)
   doc_inv_idx = build_doc_inverted_index(doc_lst)
   tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
-  idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
+  idf_list = compute_idf(tok_inv_idx, len(doc_lst))  # maybe remove limits?
   doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
   score_func = accumulate_dot_scores
   results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
