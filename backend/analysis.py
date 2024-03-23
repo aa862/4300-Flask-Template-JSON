@@ -3,24 +3,15 @@ import numpy as np
 import re
 import math
 from collections import Counter
-# from nltk.tokenize import TreeBankWordTokenizer
 """
 File for putting analysis related functions
 """
 
-# treebank_tokenizer = TreeBankWordTokenizer()
-
 def tokenize(text: str):
-    # print(text)
-    # try:
     low_text = text.lower()
     pattern = r'[a-z]+'
     word_list = re.findall(pattern, low_text)
     return word_list
-    # except:
-    #    print("TEXT IS HEREEE")
-    #    print(text)
-    #    return None
 
 
 def build_doc_inverted_index(doc_lst):
@@ -38,12 +29,8 @@ def build_doc_inverted_index(doc_lst):
   inverted_index: dict
   """
   inv_idx = {}
-  # unique_docs_lst = list(set(doc_lst))
-
-  # for doc_idx in range(len(unique_docs_lst)):
   for doc_idx in range(len(doc_lst)):
      inv_idx[doc_lst[doc_idx]] = doc_idx
-    # inv_idx[unique_docs_lst[doc_idx]] = doc_idx
   return inv_idx
 
 def build_token_inverted_index(doc_lst: list, doc_inv_idx: dict) -> dict:
@@ -170,21 +157,12 @@ def boolean_search(query, token_inv_idx : dict, num_docs : int):
       expression of the query.
 
   """
-  # print(type(query))
   query_tok = tokenize(query)
   results = set(range(num_docs))
-  # results = set(token_inv_idx[query_tok[0]])
-  # print("RESULTS: " + str(results))
-  # print(len(query_tok))
-  # print(query_tok)
   for tok in query_tok:
-    #  print(tok)
-    #  print(set(token_inv_idx[tok]))
-    # print(token_inv_idx[tok])
     if tok not in token_inv_idx:
       return []
     results = results.intersection(set(token_inv_idx[tok]))
-    # print(len(results))
   return list(results)
 
 def word_counts(str_query : str) -> dict:
@@ -225,19 +203,9 @@ def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=0.95):
         For each term, the dict contains the idf value.
 
     """
-    # idf_dict = {}
-    # for key in inv_indx.keys():
-    # for df,doc_id in inv_idx:
-    #   if df >= min_df and df / n_docs < max_df_ratio:
-    #     idf_in = n_docs / (1 + df)
-    #     idf_dict[term] = math.log(idf_in, 2)
-
-    # return idf_dict
     idf_dict = {}
     
     for term in inv_idx:
-      # print(f"term : {term}")
-      # print('term: ', type(inv_idx[term]))
       df = len(inv_idx[term])
       if df >= min_df and df / n_docs < max_df_ratio:
         idf_in = n_docs / (1 + df)
@@ -301,7 +269,6 @@ def accumulate_dot_scores(query_word_counts: dict, index: dict, idf: dict) -> di
       if word in query_word_counts:
         for doc, word_frequency in word_docs:
           dot = word_frequency * query_word_counts[word]
-          # print(idf[word])
           dot *= idf[word]**2
           doc_scores[doc] = doc_scores.get(doc, 0) + dot
     
@@ -359,10 +326,6 @@ def index_search(
       if token in idf:
         prd_sqr = (idf[token] * query_w_counts[token]) ** 2
         query_norm_m+=prd_sqr
-        
-    # print(f"querywcounts {type(query_w_counts)}")
-    # print(f"index {type(index)}")
-    # print(f"idf {type(idf)}")
 
     num_vals= score_func(query_w_counts, index, idf)
 
@@ -379,14 +342,11 @@ def get_doc_rankings(query, doc_lst):
   """
   CUTOFF = 10
   query = query.lower()
-  # query_counts = word_counts(query)
   doc_inv_idx = build_doc_inverted_index(doc_lst)
   tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
-  idf_list = compute_idf(tok_inv_idx, len(doc_lst))  # maybe remove limits?
+  idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
   doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
   score_func = accumulate_dot_scores
   results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
   idx_results = [doc_id for _,doc_id in results[:CUTOFF]]
-  # truncated_results = results[:CUTOFF]
-  # return truncated_results
   return idx_results
