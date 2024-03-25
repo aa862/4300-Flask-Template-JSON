@@ -18,12 +18,12 @@
                 <div class="input-box" onclick="sendFocus('filter-title-val')">
                     <img src="{{ url_for('static', filename='images/mag.png') }}" />
                     <input placeholder="Search for the title of a banned book" id="filter-title-val"
-                        onkeyup="filterTitles()">
+                        onkeypress="filterTitles(event)">
                 </div>
 
                 <div class="input-box" onclick="sendFocus('filter-book-val')">
                     <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                    <input placeholder="Search for a theme or topic" id="filter-book-val" onkeyup="filterBooks()">
+                    <input placeholder="Search for a theme or topic" id="filter-book-val" onkeypress="filterBooks(event)">
                 </div>
             </div>
 
@@ -48,8 +48,9 @@
             document.getElementById(id).focus()
         }
 
-        function filterTitles() {
-            document.getElementById("answer-box").innerHTML = "No results."
+        function filterTitles(event) {
+            if (event.key === "Enter") {
+                document.getElementById("answer-box").innerHTML = "No results."
             console.log(document.getElementById("filter-title-val").value)
             fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
                 .then((response) => response.json())
@@ -61,13 +62,14 @@
                     }
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
-
+            }
         }
 
-        function filterBooks() {
-            document.getElementById("answer-box").innerHTML = "No results."
-            console.log(document.getElementById("filter-book-val").value)
-            fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
+        function filterBooks(event) {
+            if (event.key === "Enter") {
+                document.getElementById("answer-box").innerHTML = "No results."
+                console.log(document.getElementById("filter-book-val").value)
+                fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
                     let tempDiv = document.createElement("div")
@@ -77,7 +79,7 @@
                     }
                     document.getElementById("answer-box").appendChild(tempDiv);
                 }));
-
+            }
         }
 
     </script>
