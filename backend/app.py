@@ -44,8 +44,9 @@ def title_search(query):
     
     matches_filtered = df.iloc[results]
     matches_filtered = matches_filtered[fields_to_print]
+
     all_ban_info = matches_filtered['ban_info']
-    matches_filtered['ban_info'] = edit_ban_info_print(all_ban_info)
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
 
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
@@ -66,22 +67,29 @@ def theme_search(query):
     cossim_results = analysis.get_doc_rankings(query, lst_blurb)
     matches_filtered = df.iloc[cossim_results]
     matches_filtered = matches_filtered[fields_to_print]
+
     all_ban_info = matches_filtered['ban_info']
-    matches_filtered['ban_info'] = edit_ban_info_print(all_ban_info)
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
 
-def build_ban_freq_dict(ban_data_str: str) -> dict:
+def build_ban_freq_dict(ban_info_str: str) -> dict:
+    """
+    Returns a dictionary of mappings of states to the
+    number of regions in which the book is banned in that state.
+
+    Precondition: The parameter ``ban_info_str`` is a str
+    representing the ban information, where information for
+    the regions a book is banned in are delimited by ";",
+    and the information for each specific region ban is
+    delimited by commas, and the state is the second
+    element of that delimited list.
+    """
     state_freq_dict = {}
-    # print("ban_data_str")
-    # print(ban_data_str)
-    data_str = ban_data_str.strip().split(";")[:-1]
-    # print("data_str")
-    # print(data_str)
-    for ban_instance in data_str:
-        data_fields = ban_instance.split(",")
-        # print("data_fields")
-        # print(data_fields)
+    reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
+    for reg_info in reg_info_lst:
+        data_fields = reg_info.split(",")
         state = data_fields[1].strip()
         if state in state_freq_dict:
             state_freq_dict[state] += 1
@@ -89,24 +97,31 @@ def build_ban_freq_dict(ban_data_str: str) -> dict:
             state_freq_dict[state] = 1
     return state_freq_dict
 
-def edit_ban_info_print(df_col):
+def build_new_ban_info_col(df_col):
     """
-    Returns a list of strings to be used as the new column for printing.
+    Returns a list of strings to be used as the new column
+    for df_col "ban_info" column of the matched dataframe.
+
+    Precondition: ``df_col`` is a column of data from a dataframe.
+
+    States and frequency of banning is extracted from each row
+    of ``df_col``, and a new list with each element in the format:
+        state, (frequency_of_bans_in_state)
+    is returned.
     """
-    # list of dictionaries of mappings of state to frequency of banning
-    ban_freq_dict_lst = []
     # dictionaries of mappings of state to frequency of banning
     ban_freq_dict = {}
-    # title_ban_info = None
-    for ban_data_str in df_col:
-        ban_freq_dict = build_ban_freq_dict(ban_data_str)
-        ban_freq_dict_lst.append(ban_freq_dict)
-    # list of strings will replace entries for ban info
+    # list of dictionaries of mappings of state to frequency of banning (list of ban_freq_dicts)
+    ban_freq_dict_lst = []
+    # list of strings in format: state, (frequency_of_bans_in_state)
     new_lst = []
-    for lst_dict_elem in ban_freq_dict_lst:
+    for ban_info_str in df_col:
+        ban_freq_dict = build_ban_freq_dict(ban_info_str)
+        ban_freq_dict_lst.append(ban_freq_dict)
+    for freq_dict in ban_freq_dict_lst:
         state_ban_info_str = ""
-        for state in lst_dict_elem:
-            body_str = state + " (" + str(lst_dict_elem[state]) + "), "
+        for state in freq_dict:
+            body_str = state + " (" + str(freq_dict[state]) + "), "
             state_ban_info_str = state_ban_info_str + body_str
         new_lst.append(state_ban_info_str[:-2])
     return new_lst
@@ -127,7 +142,3 @@ def books_search():
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
-
-
-
-
