@@ -23,7 +23,8 @@
 
                 <div class="input-box" onclick="sendFocus('filter-book-val')">
                     <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                    <input placeholder="Search for a theme or topic" id="filter-book-val" onkeypress="filterBooks(event)">
+                    <input placeholder="Search for a theme or topic" id="filter-book-val"
+                        onkeypress="filterBooks(event)">
                 </div>
             </div>
 
@@ -39,8 +40,8 @@
             return `<div class=''>
                 <h3 class='episode-title'>${title}</h3>
                 <p class='episode-desc'>${authors}</p>
-                <p class='episode-rating'>Ban Info: ${ban_info}</p>
-                <p class='episode-rating'>Blurb: ${summary}</p>
+                <p class='episode-rating'>Banned in: ${ban_info}</p>
+                <p class='episode-rating'>${summary}</p>
             </div>`
         }
 
@@ -51,17 +52,17 @@
         function filterTitles(event) {
             if (event.key === "Enter") {
                 document.getElementById("answer-box").innerHTML = "No results."
-            console.log(document.getElementById("filter-title-val").value)
-            fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
-                .then((response) => response.json())
-                .then((data) => data.forEach(row => {
-                    let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                    if (document.getElementById("answer-box").innerHTML == "No results.") {
-                        document.getElementById("answer-box").innerHTML = "Title search results:"
-                    }
-                    document.getElementById("answer-box").appendChild(tempDiv)
-                }));
+                console.log(document.getElementById("filter-title-val").value)
+                fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
+                    .then((response) => response.json())
+                    .then((data) => data.forEach(row => {
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        if (document.getElementById("answer-box").innerHTML == "No results.") {
+                            document.getElementById("answer-box").innerHTML = "Title search results:"
+                        }
+                        document.getElementById("answer-box").appendChild(tempDiv)
+                    }));
             }
         }
 
@@ -70,15 +71,15 @@
                 document.getElementById("answer-box").innerHTML = "No results."
                 console.log(document.getElementById("filter-book-val").value)
                 fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
-                .then((response) => response.json())
-                .then((data) => data.forEach(row => {
-                    let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                    if (document.getElementById("answer-box").innerHTML == "No results.") {
-                        document.getElementById("answer-box").innerHTML = "Theme search results:"
-                    }
-                    document.getElementById("answer-box").appendChild(tempDiv);
-                }));
+                    .then((response) => response.json())
+                    .then((data) => data.forEach(row => {
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        if (document.getElementById("answer-box").innerHTML == "No results.") {
+                            document.getElementById("answer-box").innerHTML = "Theme search results:"
+                        }
+                        document.getElementById("answer-box").appendChild(tempDiv);
+                    }));
             }
         }
 

@@ -44,6 +44,9 @@ def title_search(query):
     
     matches_filtered = df.iloc[results]
     matches_filtered = matches_filtered[fields_to_print]
+    all_ban_info = matches_filtered['ban_info']
+    matches_filtered['ban_info'] = edit_ban_info_print(all_ban_info)
+
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
 
@@ -63,8 +66,50 @@ def theme_search(query):
     cossim_results = analysis.get_doc_rankings(query, lst_blurb)
     matches_filtered = df.iloc[cossim_results]
     matches_filtered = matches_filtered[fields_to_print]
+    all_ban_info = matches_filtered['ban_info']
+    matches_filtered['ban_info'] = edit_ban_info_print(all_ban_info)
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
+
+def build_ban_freq_dict(ban_data_str: str) -> dict:
+    state_freq_dict = {}
+    # print("ban_data_str")
+    # print(ban_data_str)
+    data_str = ban_data_str.strip().split(";")[:-1]
+    # print("data_str")
+    # print(data_str)
+    for ban_instance in data_str:
+        data_fields = ban_instance.split(",")
+        # print("data_fields")
+        # print(data_fields)
+        state = data_fields[1].strip()
+        if state in state_freq_dict:
+            state_freq_dict[state] += 1
+        else:
+            state_freq_dict[state] = 1
+    return state_freq_dict
+
+def edit_ban_info_print(df_col):
+    """
+    Returns a list of strings to be used as the new column for printing.
+    """
+    # list of dictionaries of mappings of state to frequency of banning
+    ban_freq_dict_lst = []
+    # dictionaries of mappings of state to frequency of banning
+    ban_freq_dict = {}
+    # title_ban_info = None
+    for ban_data_str in df_col:
+        ban_freq_dict = build_ban_freq_dict(ban_data_str)
+        ban_freq_dict_lst.append(ban_freq_dict)
+    # list of strings will replace entries for ban info
+    new_lst = []
+    for lst_dict_elem in ban_freq_dict_lst:
+        state_ban_info_str = ""
+        for state in lst_dict_elem:
+            body_str = state + " (" + str(lst_dict_elem[state]) + "), "
+            state_ban_info_str = state_ban_info_str + body_str
+        new_lst.append(state_ban_info_str[:-2])
+    return new_lst
 
 @app.route("/")
 def home():
