@@ -1,8 +1,11 @@
-import csv
 import numpy as np
 import re
 import math
 from collections import Counter
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import normalize
+from scipy.sparse.linalg import svds
 """
 File for putting analysis related functions
 """
@@ -350,3 +353,38 @@ def get_doc_rankings(query, doc_lst):
   results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
   idx_results = [doc_id for _,doc_id in results[:CUTOFF]]
   return idx_results
+
+def svd_analysis(data_list):
+   """
+    Inputs:
+        data_list: a term-document-matrix
+    Returns: 
+        Docs_Compressed_Normalized: 
+        Words_Compressed_Normalized: 
+   """
+   # TODO
+   vectorizer = TfidfVectorizer(stop_words = 'english', max_df = .7, min_df = 75)
+#    data_list = documents_to_blurb()
+   td_matrix = vectorizer.fit_transform(data_list)
+   docs_compressed, _, words_compressed = svds(td_matrix, k=100)
+   docs_compressed_norm = normalize(docs_compressed, axis = 1)
+   words_compressed_norm = normalize(words_compressed, axis = 1)
+   return (docs_compressed_norm, words_compressed_norm, vectorizer.vocabulary_)
+
+def closest_projects_to_word(docs_compressed_normed, words_compressed_normed, word_in, word_to_index, k = 5):
+    """
+    Input:
+        docs_compressed_normed: Output from the SVD (U)
+        word_compressed_normed: Output from the SVD (V^T)
+        word_in: The query inputted by the user 
+        word_to_index: A Dictionary mapping all the words in vocab to an index
+    Returns:
+        
+    """
+    if word_in not in word_to_index: return "Not in vocab."
+    sims = docs_compressed_normed.dot(words_compressed_normed[word_to_index[word_in],:])
+    asort = np.argsort(-sims)[:k+1]
+    # return [(i, documents[i][0],sims[i]) for i in asort[1:]]
+    print("asort:")
+    print(asort)
+    return asort

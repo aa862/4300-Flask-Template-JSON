@@ -74,6 +74,34 @@ def theme_search(query):
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
 
+def theme_search_svd(query):
+    """
+    Returns a json of the most similar documents to the query.
+    
+    Similarity is determined using SVD similarity
+    between the query and the summaries of all the books.
+    """
+    # TODO
+    df = pd.read_csv("final1.csv")
+    # blurbs = df['summary']
+    nan_variable = "summary"
+    df_cleaned = df[nan_variable].fillna('')
+    lst_blurb = df_cleaned
+
+    docs_compressed_normed, words_compressed_normed, word_to_index = analysis.svd_analysis(lst_blurb)
+    top_matches_lst = analysis.closest_projects_to_word(docs_compressed_normed, words_compressed_normed, query, word_to_index)
+    print(type(top_matches_lst))
+
+    # change to JSON for printing
+    matches_filtered = df.iloc[top_matches_lst]
+    matches_filtered = matches_filtered[fields_to_print]
+
+    all_ban_info = matches_filtered['ban_info']
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+    jsonified = matches_filtered.to_json(orient='records')
+    return jsonified
+
 def build_ban_freq_dict(ban_info_str: str) -> dict:
     """
     Returns a dictionary of mappings of states to the
@@ -138,7 +166,7 @@ def titles_search():
 @app.route("/books")
 def books_search():
     text = request.args.get("title")
-    return theme_search(text)
+    return theme_search_svd(text)
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
