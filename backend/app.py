@@ -40,15 +40,23 @@ def title_search(query):
     pd_title = df['title']
     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
     tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
-    results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
+    #results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
+    print(pd_title)
+    results = analysis.edit_distance_search(query, pd_title, analysis.insertion_cost, analysis.deletion_cost, analysis.substitution_cost)
     
+    results = analysis.get_titleidx(results,title_inv_idx)
+    #print(results)
     matches_filtered = df.iloc[results]
+    print(matches_filtered)
     matches_filtered = matches_filtered[fields_to_print]
 
     all_ban_info = matches_filtered['ban_info']
+    #print(all_ban_info)
+    print("watch out")
     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
 
     jsonified = matches_filtered.to_json(orient='records')
+    # print(jsonified)
     return jsonified
 
 def theme_search(query):
@@ -87,14 +95,20 @@ def build_ban_freq_dict(ban_info_str: str) -> dict:
     element of that delimited list.
     """
     state_freq_dict = {}
-    reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
-    for reg_info in reg_info_lst:
-        data_fields = reg_info.split(",")
-        state = data_fields[1].strip()
-        if state in state_freq_dict:
-            state_freq_dict[state] += 1
-        else:
-            state_freq_dict[state] = 1
+    try:
+        reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
+
+    except:
+        print(ban_info_str)
+    
+    else:
+        for reg_info in reg_info_lst:
+            data_fields = reg_info.split(",")
+            state = data_fields[1].strip()
+            if state in state_freq_dict:
+                state_freq_dict[state] += 1
+            else:
+                state_freq_dict[state] = 1
     return state_freq_dict
 
 def build_new_ban_info_col(df_col):

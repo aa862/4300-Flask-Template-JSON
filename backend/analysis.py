@@ -3,10 +3,159 @@ import numpy as np
 import re
 import math
 from collections import Counter
+from typing import List, Tuple, Dict
 """
 File for putting analysis related functions
 """
 
+#####minimum edit#################################################################
+def insertion_cost(message, j):
+    return 1
+
+
+def deletion_cost(query, i):
+    return 1
+
+
+def substitution_cost(query, message, i, j):
+    if query[i - 1] == message[j - 1]:
+        return 0
+    else:
+        return 1
+def get_titleidx(titles, inverse):
+   idx = []
+   for t in titles:
+      idx.append(inverse[t])
+   return idx
+      
+
+def edit_matrix(query, message, ins_cost_func, del_cost_func, sub_cost_func):
+    """Calculates the edit matrix
+
+    Arguments
+    =========
+
+    query: query string,
+
+    message: message string,
+
+    ins_cost_func: function that returns the cost of inserting a letter,
+
+    del_cost_func: function that returns the cost of deleting a letter,
+
+    sub_cost_func: function that returns the cost of substituting a letter,
+
+    Returns:
+        edit matrix {(i,j): int}
+    """
+
+    m = len(query) + 1
+    n = len(message) + 1
+
+    chart = {(0, 0): 0}
+    for i in range(1, m):
+        chart[i, 0] = chart[i - 1, 0] + del_cost_func(query, i)
+    for j in range(1, n):
+        chart[0, j] = chart[0, j - 1] + ins_cost_func(message, j)
+    for i in range(1, m):
+        for j in range(1, n):
+            chart[i, j] = min(
+                chart[i - 1, j] + del_cost_func(query, i),
+                chart[i, j - 1] + ins_cost_func(message, j),
+                chart[i - 1, j - 1] + sub_cost_func(query, message, i, j),
+            )
+    return chart
+def edit_distance(
+    query: str, message: str, ins_cost_func: int, del_cost_func: int, sub_cost_func: int
+) -> int:
+    """Finds the edit distance between a query and a message using the edit matrix
+
+    Arguments
+    =========
+    query: query string,
+
+    message: message string,
+
+    ins_cost_func: function that returns the cost of inserting a letter,
+
+    del_cost_func: function that returns the cost of deleting a letter,
+
+    sub_cost_func: function that returns the cost of substituting a letter,
+
+    Returns:
+        edit cost (int)
+    """
+
+    query = query.lower()
+    m = len(query)
+    message = message.lower()
+    n = len(message)
+
+
+    # TODO-1.1
+    mat = edit_matrix(query, message, ins_cost_func, del_cost_func, 
+    sub_cost_func)
+    
+    
+    return mat[(m,n)]
+    
+    
+
+def edit_distance_search(
+    query: str,
+    msgs: List[dict],
+    ins_cost_func: int,
+    del_cost_func: int,
+    sub_cost_func: int,
+) -> List[Tuple[int, str]]:
+    """Edit distance search
+
+    Arguments
+    =========
+    query: string,
+        The query we are looking for.
+
+    msgs: list of dicts,
+        Each message in this list has a 'text' field with
+        the raw document.
+
+    ins_cost_func: function that returns the cost of inserting a letter,
+
+    del_cost_func: function that returns the cost of deleting a letter,
+
+    sub_cost_func: function that returns the cost of substituting a letter,
+
+    Returns
+    =======
+    result: list of (score, message) tuples.
+        The result list is sorted by score such that the closest match
+        is the top result in the list.
+
+    """
+    # TODO-1.2
+    scores = []
+    mess = []
+    final = []
+
+    for m in msgs:
+      scores.append(edit_distance(query, m,  ins_cost_func, del_cost_func, sub_cost_func))
+      mess.append(m)
+
+    scores = np.array(scores)
+    mess = np.array(mess)
+
+    s = np.argsort(scores)
+    mess = mess[s]
+    scores = scores[s]
+    
+
+    
+
+    for i in range(10):
+      final.append(mess[i])
+    return final
+
+######minimum edit########################################################################
 def tokenize(text: str):
     low_text = text.lower()
     pattern = r'[a-z]+'
