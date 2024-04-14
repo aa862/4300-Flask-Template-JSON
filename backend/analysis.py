@@ -10,12 +10,16 @@ from scipy.sparse.linalg import svds
 File for putting analysis related functions
 """
 
+### Tokenizer ###
+
 def tokenize(text: str):
     low_text = text.lower()
     pattern = r'[a-z]+'
     word_list = re.findall(pattern, low_text)
     return word_list
 
+
+### Boolean Search ###
 
 def build_doc_inverted_index(doc_lst):
   """Builds an inverted index from the titles.
@@ -167,6 +171,9 @@ def boolean_search(query, token_inv_idx : dict, num_docs : int):
       return []
     results = results.intersection(set(token_inv_idx[tok]))
   return list(results)
+
+
+### Cosine Similarity ###
 
 def word_counts(str_query : str) -> dict:
    """
@@ -339,11 +346,14 @@ def index_search(
     return sorted(results,key=lambda x:x[0],reverse=True)
 
 
-def get_doc_rankings(query, doc_lst):
+def get_doc_rankings(query, doc_lst, num_docs):
   """
-  Returs the ranked documents
+  Returns a list of ``num_docs`` document indexes representing
+  the documents in ``doc_lst`` most similar documents to ``query``.
+
+  Uses cosine similiarity to generate a list of ``num_docs``
+  documents that are most similar to ``query``.
   """
-  CUTOFF = 10
   query = query.lower()
   doc_inv_idx = build_doc_inverted_index(doc_lst)
   tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
@@ -351,10 +361,12 @@ def get_doc_rankings(query, doc_lst):
   doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
   score_func = accumulate_dot_scores
   results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
-  idx_results = [doc_id for _,doc_id in results[:CUTOFF]]
+  idx_results = [doc_id for _,doc_id in results[:num_docs]]
   return idx_results
 
-def svd_analysis(data_list):
+### SVD Analysis ###
+
+def svd_analysis(data_list, query):
    """
     Inputs:
         data_list: a term-document-matrix
@@ -362,16 +374,15 @@ def svd_analysis(data_list):
         Docs_Compressed_Normalized: 
         Words_Compressed_Normalized: 
    """
-   # TODO
    vectorizer = TfidfVectorizer(stop_words = 'english', max_df = .7, min_df = 75)
-#    data_list = documents_to_blurb()
    td_matrix = vectorizer.fit_transform(data_list)
    docs_compressed, _, words_compressed = svds(td_matrix, k=100)
    docs_compressed_norm = normalize(docs_compressed, axis = 1)
    words_compressed_norm = normalize(words_compressed, axis = 1)
-   return (docs_compressed_norm, words_compressed_norm, vectorizer.vocabulary_)
+   query_vec = vectorizer.transform([query]).toarray()
+   return (docs_compressed_norm, words_compressed_norm, query_vec)
 
-def closest_projects_to_word(docs_compressed_normed, words_compressed_normed, word_in, word_to_index, k = 5):
+def closest_projects_to_query(docs_compressed_normed, words_compressed_normed, query_vec, k = 5):
     """
     Input:
         docs_compressed_normed: Output from the SVD (U)
@@ -381,10 +392,8 @@ def closest_projects_to_word(docs_compressed_normed, words_compressed_normed, wo
     Returns:
         
     """
-    if word_in not in word_to_index: return "Not in vocab."
-    sims = docs_compressed_normed.dot(words_compressed_normed[word_to_index[word_in],:])
+    # gets correct shape for query vec
+    new_query_vec = normalize(np.dot(query_vec, words_compressed_normed)).squeeze()
+    sims = docs_compressed_normed.dot(new_query_vec)
     asort = np.argsort(-sims)[:k+1]
-    # return [(i, documents[i][0],sims[i]) for i in asort[1:]]
-    print("asort:")
-    print(asort)
     return asort
