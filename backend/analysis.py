@@ -10,18 +10,18 @@ File for putting analysis related functions
 
 #####minimum edit#################################################################
 def insertion_cost(message, j):
-    return 1
+    return .2
 
 
 def deletion_cost(query, i):
-    return 1
+    return .2
 
 
 def substitution_cost(query, message, i, j):
     if query[i - 1] == message[j - 1]:
         return 0
     else:
-        return 1
+        return 2
 def get_titleidx(titles, inverse):
    idx = []
    for t in titles:
