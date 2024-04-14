@@ -136,7 +136,7 @@ def build_token_inverted_index_with_freq(doc_lst: list, doc_inv_idx: dict) -> di
     return token_inv_idx
 
 
-def boolean_search(query, token_inv_idx : dict, num_docs : int):
+def boolean_search(query, token_inv_idx : dict, num_docs : int, num_results: int):
   """Search the collection of documents that contain each token
     of the given query for the given query.
 
@@ -170,7 +170,7 @@ def boolean_search(query, token_inv_idx : dict, num_docs : int):
     if tok not in token_inv_idx:
       return []
     results = results.intersection(set(token_inv_idx[tok]))
-  return list(results)
+  return list(results)[:num_results]
 
 
 ### Cosine Similarity ###
@@ -346,23 +346,23 @@ def index_search(
     return sorted(results,key=lambda x:x[0],reverse=True)
 
 
-def get_doc_rankings(query, doc_lst, num_docs):
-  """
-  Returns a list of ``num_docs`` document indexes representing
-  the documents in ``doc_lst`` most similar documents to ``query``.
+def get_doc_rankings(query, doc_lst, num_results):
+    """
+    Returns a list of ``num_docs`` document indexes representing
+    the documents in ``doc_lst`` most similar documents to ``query``.
 
-  Uses cosine similiarity to generate a list of ``num_docs``
-  documents that are most similar to ``query``.
-  """
-  query = query.lower()
-  doc_inv_idx = build_doc_inverted_index(doc_lst)
-  tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
-  idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
-  doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
-  score_func = accumulate_dot_scores
-  results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
-  idx_results = [doc_id for _,doc_id in results[:num_docs]]
-  return idx_results
+    Uses cosine similiarity to generate a list of ``num_docs``
+    documents that are most similar to ``query``.
+    """
+    query = query.lower()
+    doc_inv_idx = build_doc_inverted_index(doc_lst)
+    tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
+    idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
+    doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
+    score_func = accumulate_dot_scores
+    results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
+    idx_results = [doc_id for _,doc_id in results[:num_results]]
+    return idx_results
 
 ### SVD Analysis ###
 
@@ -395,5 +395,5 @@ def closest_projects_to_query(docs_compressed_normed, words_compressed_normed, q
     # gets correct shape for query vec
     new_query_vec = normalize(np.dot(query_vec, words_compressed_normed)).squeeze()
     sims = docs_compressed_normed.dot(new_query_vec)
-    asort = np.argsort(-sims)[:k+1]
+    asort = np.argsort(-sims)[:k]
     return asort
