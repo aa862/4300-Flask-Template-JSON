@@ -208,8 +208,10 @@ def title_search(query, sim_measure_code):
     matches_lst = []
     if sim_measure_code == 0:
         matches_lst = boolean_sim_search(query)
+        print("boolean search")
         if len(matches_lst) == 0:
             matches_lst = edit_dist_search(query)
+            print("failed boolean search")
     if sim_measure_code == 1:
         matches_lst = edit_dist_search(query)
     return convert_to_json(matches_lst)
@@ -241,7 +243,7 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
-    return title_search(text, 1)
+    return title_search(text, 0)
 
 @app.route("/books")
 def books_search():

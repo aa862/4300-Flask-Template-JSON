@@ -27,12 +27,16 @@
                         onkeypress="filterBooks(event)">
                 </div>
 
-                <div class="input-box" onclick="sendFocus('filter-review-val')">
-                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                    <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val"
-                        onkeypress="filterReviews(event)">
-                </div>
+                
             </div>
+            <div class="input-box-long" onclick="sendFocus('filter-review-val')">
+                <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val2"
+                    onkeypress="filterReviews(event)">
+            </div>
+
+            
+            
 
         </div>
         <div id="answer-box">
@@ -92,7 +96,7 @@
                         behavior: "smooth"
                     });
 
-                }, 450);
+                }, 2000);
 
             }
             // const appointmentFullElement = document.getElementById('answer-box')
@@ -129,7 +133,7 @@
                         behavior: "smooth"
                     });
 
-                }, 450);
+                }, 2000);
 
             }
 
@@ -143,8 +147,8 @@
 
                 document.getElementById("answer-box").innerHTML = WAITING_MSG
 
-                console.log(document.getElementById("filter-review-val").value)
-                fetch("/reviews?" + new URLSearchParams({ title: document.getElementById("filter-review-val").value }).toString())
+                console.log(document.getElementById("filter-review-val2").value)
+                fetch("/reviews?" + new URLSearchParams({ title: document.getElementById("filter-review-val2").value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
@@ -166,7 +170,7 @@
                         behavior: "smooth"
                     });
 
-                }, 450);
+                }, 2000);
 
             }
         }

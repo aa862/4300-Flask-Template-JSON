@@ -83,7 +83,20 @@
     height: 20px;
     width: 20px;
 }
+.input-box-long{
+    border-radius: 50px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    padding: 12px;
+    width: 600px;
+}
 
+.input-box-long img {
+    height: 20px;
+    width: 20px;
+}
 .top-text {
     display: flex;
     flex-direction: column;
@@ -98,6 +111,15 @@
     color: white;
 
 }
+.input-box-long input {
+    width: 100%;
+    font-size: 16px;
+    border: none;
+    outline: 0;
+    color: white;
+
+}
+
 
 #answer-box {
     width: 700px;
@@ -114,7 +136,8 @@
 
 #filter-title-val,
 #filter-book-val,
-#filter-review-val {
+#filter-review-val,
+#filter-review-val2 {
     background: none;
     color: black;
 }
