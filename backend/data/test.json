@@ -1,0 +1,33 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "John"
+    },
+    {
+      "id": 2,
+      "name": "Anna"
+    },
+    {
+      "id": 3,
+      "name": "Peter"
+    }
+  ],
+  "age_occupation": [
+    {
+      "id": 1,
+      "age": 28,
+      "occupation": "Engineer"
+    },
+    {
+      "id": 2,
+      "age": 24,
+      "occupation": "Doctor"
+    },
+    {
+      "id": 3,
+      "age": 22,
+      "occupation": "Student"
+    }
+  ]
+}

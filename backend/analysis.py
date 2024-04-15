@@ -291,7 +291,7 @@ def build_token_inverted_index_with_freq(doc_lst: list, doc_inv_idx: dict) -> di
     return token_inv_idx
 
 
-def boolean_search(query, token_inv_idx : dict, num_docs : int):
+def boolean_search(query, token_inv_idx : dict, num_docs : int, num_results: int):
   """Search the collection of documents that contain each token
     of the given query for the given query.
 
@@ -325,7 +325,7 @@ def boolean_search(query, token_inv_idx : dict, num_docs : int):
     if tok not in token_inv_idx:
       return []
     results = results.intersection(set(token_inv_idx[tok]))
-  return list(results)
+  return list(results)[:num_results]
 
 
 ### Cosine Similarity ###
@@ -501,23 +501,82 @@ def index_search(
     return sorted(results,key=lambda x:x[0],reverse=True)
 
 
-def get_doc_rankings(query, doc_lst, num_docs):
-  """
-  Returns a list of ``num_docs`` document indexes representing
-  the documents in ``doc_lst`` most similar documents to ``query``.
+def get_doc_rankings(query, doc_lst, num_results):
+    """
+    Returns a list of ``num_docs`` document indexes representing
+    the documents in ``doc_lst`` most similar documents to ``query``.
 
-  Uses cosine similiarity to generate a list of ``num_docs``
-  documents that are most similar to ``query``.
-  """
-  query = query.lower()
-  doc_inv_idx = build_doc_inverted_index(doc_lst)
-  tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
-  idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
-  doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
-  score_func = accumulate_dot_scores
-  results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
-  idx_results = [doc_id for _,doc_id in results[:num_docs]]
-  return idx_results
+    Uses cosine similiarity to generate a list of ``num_docs``
+    documents that are most similar to ``query``.
+    """
+    query = query.lower()
+    doc_inv_idx = build_doc_inverted_index(doc_lst)
+    tok_inv_idx = build_token_inverted_index_with_freq(doc_lst, doc_inv_idx)
+    idf_list = compute_idf(tok_inv_idx, len(doc_lst), 0, 1)  # maybe remove limits?
+    doc_norms = compute_doc_norms(tok_inv_idx, idf_list, len(doc_lst))
+    score_func = accumulate_dot_scores
+    results = index_search(query, tok_inv_idx, idf_list, doc_norms, score_func, tokenize)
+    idx_results = [doc_id for _,doc_id in results[:num_results]]
+    return idx_results
+
+# this was for cosine sim with weights for reviews and summaries. ignore
+# def get_doc_rankings_2(query, doc_lst1, doc_lst2, num_results, a=1.0, b=0):
+#     """
+#     Returns a list of ``num_docs`` document indexes representing
+#     the documents in ``doc_lst`` most similar documents to ``query``.
+
+#     Uses cosine similiarity to generate a list of ``num_docs``
+#     documents that are most similar to ``query``.
+
+#     - a is the weight for the blurb vector
+#     - b is the weight for the reviews vector
+#     """
+    
+#     query = query.lower()
+#     # first vector
+#     doc_inv_idx1 = build_doc_inverted_index(doc_lst1)
+#     print("len(doc_inv_idx1)")
+#     print(len(doc_inv_idx1))
+#     tok_inv_idx1 = build_token_inverted_index_with_freq(doc_lst1, doc_inv_idx1)
+#     print("len(tok_inv_idx1)")
+#     print(len(tok_inv_idx1))
+#     idf_list1 = compute_idf(tok_inv_idx1, len(doc_lst1), 0, 1)  # maybe remove limits?
+#     doc_norms1 = compute_doc_norms(tok_inv_idx1, idf_list1, len(doc_lst1))
+#     score_func1 = accumulate_dot_scores
+#     print("results 1")
+#     results1 = index_search(query, tok_inv_idx1, idf_list1, doc_norms1, score_func1, tokenize)
+    
+#     # second vector
+#     print("before inverted")
+#     doc_inv_idx2 = build_doc_inverted_index(doc_lst2)
+#     print("before tokens")
+#     print("len(doc_inv_idx2)")
+#     print(len(doc_inv_idx2))
+#     tok_inv_idx2 = build_token_inverted_index_with_freq(doc_lst2, doc_inv_idx2)
+#     print("before idf")
+#     print("len(tok_inv_idx2)")
+#     print(len(tok_inv_idx2))
+#     idf_list2 = compute_idf(tok_inv_idx2, len(doc_lst2), 0, 1)  # maybe remove limits?
+#     print("before compute doc norms")
+#     doc_norms2 = compute_doc_norms(tok_inv_idx2, idf_list2, len(doc_lst2))
+#     print("before acc")
+#     score_func2 = accumulate_dot_scores
+#     print("before index search")
+#     results2 = index_search(query, tok_inv_idx2, idf_list2, doc_norms2, score_func2, tokenize)
+#     print("results2:")
+#     print(results2)
+    
+#     results1 = [score for score,_ in results1]
+#     print("len(results1)")
+#     print(len(results1))
+#     results2 = [score for score,_ in results2]
+#     print("len(results2)")
+#     print(len(results2))
+#     res = a * np.array(results1) + b * np.array(results2)
+#     idx_results = [doc_id for _,doc_id in res[:num_results]]
+#     print("idx_results:")
+#     print(idx_results)
+#     return idx_results
 
 ### SVD Analysis ###
 
@@ -529,15 +588,17 @@ def svd_analysis(data_list, query):
         Docs_Compressed_Normalized: 
         Words_Compressed_Normalized: 
    """
-   vectorizer = TfidfVectorizer(stop_words = 'english', max_df = .7, min_df = 75)
+   vectorizer = TfidfVectorizer(stop_words = 'english', max_df = .7, min_df = 1)
    td_matrix = vectorizer.fit_transform(data_list)
    docs_compressed, _, words_compressed = svds(td_matrix, k=100)
    docs_compressed_norm = normalize(docs_compressed, axis = 1)
+#    print("docs_compressed_norm:")
+#    print(docs_compressed_norm.shape)
    words_compressed_norm = normalize(words_compressed, axis = 1)
    query_vec = vectorizer.transform([query]).toarray()
    return (docs_compressed_norm, words_compressed_norm, query_vec)
 
-def closest_projects_to_query(docs_compressed_normed, words_compressed_normed, query_vec, k = 5):
+def closest_docs_to_query(docs_compressed_normed, words_compressed_normed, query_vec, k = 5):
     """
     Input:
         docs_compressed_normed: Output from the SVD (U)
@@ -550,5 +611,18 @@ def closest_projects_to_query(docs_compressed_normed, words_compressed_normed, q
     # gets correct shape for query vec
     new_query_vec = normalize(np.dot(query_vec, words_compressed_normed)).squeeze()
     sims = docs_compressed_normed.dot(new_query_vec)
-    asort = np.argsort(-sims)[:k+1]
+    # print("sims:")
+    # print(sims)
+    # print("regular sims:")
+    # with open ("sims.txt", "w") as outfile:
+    #    for x in sims:
+    #       if x!=0.0:
+    #         outfile.write(str(x))
+       
+    # print(np.sort(-sims)[:k])
+    # print("reverse sims:")
+    # print(np.sort(sims)[:k])
+    asort = np.argsort(-sims)[:k]
+    # print("asort:")
+    # print(asort)
     return asort
