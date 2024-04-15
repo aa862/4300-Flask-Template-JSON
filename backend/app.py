@@ -208,6 +208,8 @@ def title_search(query, sim_measure_code):
     matches_lst = []
     if sim_measure_code == 0:
         matches_lst = boolean_sim_search(query)
+        if len(matches_lst) == 0:
+            matches_lst = edit_dist_search(query)
     if sim_measure_code == 1:
         matches_lst = edit_dist_search(query)
     return convert_to_json(matches_lst)
