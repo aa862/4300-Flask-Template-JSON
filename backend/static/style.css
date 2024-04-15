@@ -23,6 +23,11 @@
 }
 
 
+#imagearrow {
+    position: absolute;
+    bottom: 0px;
+}
+
 #google-c {
 
     color: #4285F4;
@@ -108,7 +113,8 @@
 
 
 #filter-title-val,
-#filter-book-val {
+#filter-book-val,
+#filter-review-val {
     background: none;
     color: black;
 }
