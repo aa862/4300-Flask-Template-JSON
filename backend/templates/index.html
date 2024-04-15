@@ -26,11 +26,16 @@
                     <input placeholder="Search for a theme or topic" id="filter-book-val"
                         onkeypress="filterBooks(event)">
                 </div>
+
+                <div class="input-box" onclick="sendFocus('filter-review-val')">
+                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                    <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val"
+                        onkeypress="filterReviews(event)">
+                </div>
             </div>
 
         </div>
         <div id="answer-box">
-
 
         </div>
 
@@ -56,8 +61,6 @@
         function sendFocus(id) {
             document.getElementById(id).focus()
         }
-
-
 
         function filterTitles(event) {
             if (event.key === "Enter") {
@@ -131,6 +134,41 @@
             }
 
             //appointmentFullElement.scrollIntoView(true, { behavior: "smooth" });
+        }
+
+        function filterReviews(event) {
+            if (event.key === "Enter") {
+                const ans = document.getElementById('answer-box')
+                const pag = document.getElementById('page')
+
+                document.getElementById("answer-box").innerHTML = WAITING_MSG
+
+                console.log(document.getElementById("filter-review-val").value)
+                fetch("/reviews?" + new URLSearchParams({ title: document.getElementById("filter-review-val").value }).toString())
+                    .then((response) => response.json())
+                    .then((data) => data.forEach(row => {
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
+                            document.getElementById("answer-box").innerHTML = "Title search results:"
+                        }
+                        document.getElementById("answer-box").appendChild(tempDiv)
+
+                    }))
+                    .then(() => {
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
+                            document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
+                        }
+                    });
+                setTimeout(function () {
+                    ans.scrollIntoView({
+                        block: "start",
+                        behavior: "smooth"
+                    });
+
+                }, 450);
+
+            }
         }
 
     </script>

@@ -142,14 +142,14 @@ def cossim_sim_search(query):
     nan_variable = "summary"
     df_cleaned = df[nan_variable].fillna('')
     lst_blurb = df_cleaned
-    reviews = df["reviews"].fillna('')
+    # reviews = df["reviews"].fillna('')
     # print("len(reviews):")
     # print(len(reviews))
     # print("len(lst_blurb):")
     # print(len(lst_blurb))
 
     # cossim_results = analysis.get_doc_rankings(query, lst_blurb, NUM_RESULTS)
-    cossim_results = analysis.get_doc_rankings(query, lst_blurb, reviews, NUM_RESULTS, a=0.75, b=0.25)
+    cossim_results = analysis.get_doc_rankings(query, lst_blurb, NUM_RESULTS)
     # print("cossim_results:")
     # print(cossim_results)
     # print("here 2")
@@ -202,14 +202,12 @@ def title_search(query, sim_measure_code):
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
 
     If sim_measure_code =
-    - 0: boolean similarity between words of query, and if there are no results, edit distance similiarity
+    - 0: boolean similarity between words of query
     - 1: edit distance similarity between titles of documents
     """
     matches_lst = []
     if sim_measure_code == 0:
         matches_lst = boolean_sim_search(query)
-        if len(matches_lst) == 0:
-            matches_lst  = edit_dist_search(query)
     if sim_measure_code == 1:
         matches_lst = edit_dist_search(query)
     return convert_to_json(matches_lst)
@@ -224,7 +222,7 @@ def theme_search(query, sim_measure_code):
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
 
     If sim_measure_code =
-    - 0: cosine similarity between blurbs 
+    - 0: cosine similarity: 
     - 1: SVD similarity
     """
     matches_lst = []
@@ -241,10 +239,15 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
-    return title_search(text, 0)
+    return title_search(text, 1)
 
 @app.route("/books")
 def books_search():
+    text = request.args.get("title")
+    return theme_search(text, 0)
+
+@app.route("/reviews")
+def reviews_search():
     text = request.args.get("title")
     return theme_search(text, 1)
 
