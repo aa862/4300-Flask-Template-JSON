@@ -31,7 +31,7 @@ CORS(app)
 # the number of results to print on the screen.
 NUM_RESULTS = 10
 # the fields of the json to print
-FIELDS_TO_PRINT = ['title','authors','ban_info', 'summary']
+FIELDS_TO_PRINT = ['title', 'authors', 'ban_info', 'genres', 'ratings', 'summary']
 
 ### Search Helper Functions ###
 
@@ -186,8 +186,26 @@ def convert_to_json(matches_lst):
     matches_filtered = df.iloc[matches_lst]
     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
 
+    a = []
+
+    for author in matches_filtered["authors"]:
+        print(author)
+        new_a = author
+        str_lst = author.split(",")
+        if len(str_lst) == 2:
+            last = str_lst[0]
+            first = str_lst[1]
+            new_a = first + " " + last
+        new_a = new_a.strip()
+        a.append(new_a)
+    
+    matches_filtered["authors"] = a
+
     all_ban_info = matches_filtered['ban_info']
     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+    print("first rating:")
+    print(matches_filtered["ratings"])
 
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified

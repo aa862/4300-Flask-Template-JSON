@@ -27,16 +27,16 @@
                         onkeypress="filterBooks(event)">
                 </div>
 
-                
+
             </div>
-            <div class="input-box-long" onclick="sendFocus('filter-review-val')">
+            <div class="input-box-long" onclick="sendFocus('filter-review-val2')">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val2"
                     onkeypress="filterReviews(event)">
             </div>
 
-            
-            
+
+
 
         </div>
         <div id="answer-box">
@@ -52,13 +52,15 @@
         const WAITING_MSG = "Loading...";
         const NO_RESULTS_MSG = "No results.";
 
-        function answerBoxTemplate(title, authors, ban_info, summary) {
+        function answerBoxTemplate(title, authors, ban_info, genres, ratings, summary) {
 
-            return `<div class=''>
-                <h3 class='episode-title'>${title}</h3>
-                <p class='episode-desc'>${authors}</p>
-                <p class='episode-rating'>Banned in: ${ban_info}</p>
-                <p class='episode-rating'>${summary}</p>
+            return `<div class='output-result'>
+                <h3 class='book-title'>${title}</h3>
+                <p class='book-author'>By ${authors}</p>
+                <p class='book-ratings'>${ratings} stars</p>
+                <p class='book-genres'>${genres}</p>
+                <p class='book-ban-info'>Banned in: ${ban_info}</p>
+                <p class='book-summary'>${summary}</p>
             </div>`
         }
 
@@ -78,7 +80,7 @@
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary)
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = "Title search results:"
                         }
@@ -89,14 +91,17 @@
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
                         }
+                        ans.scrollIntoView({
+                            block: "start",
+                            behavior: "smooth"
+                        });
                     });
-                setTimeout(function () {
-                    ans.scrollIntoView({
-                        block: "start",
-                        behavior: "smooth"
-                    });
+                // setTimeout(function () {
 
-                }, 2000);
+
+                // }, 2000);
+
+                console.log("hello world")
 
             }
             // const appointmentFullElement = document.getElementById('answer-box')
@@ -115,7 +120,7 @@
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary)
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = "Theme search results:"
                         }
@@ -126,15 +131,11 @@
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
                         }
+                        ans.scrollIntoView({
+                            block: "start",
+                            behavior: "smooth"
+                        });
                     });
-                setTimeout(function () {
-                    ans.scrollIntoView({
-                        block: "start",
-                        behavior: "smooth"
-                    });
-
-                }, 2000);
-
             }
 
             //appointmentFullElement.scrollIntoView(true, { behavior: "smooth" });
@@ -152,7 +153,7 @@
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary)
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = "Review search results:"
                         }
@@ -163,14 +164,18 @@
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
                         }
+                        ans.scrollIntoView({
+                            block: "start",
+                            behavior: "smooth"
+                        });
                     });
-                setTimeout(function () {
-                    ans.scrollIntoView({
-                        block: "start",
-                        behavior: "smooth"
-                    });
+                // setTimeout(function () {
+                //     ans.scrollIntoView({
+                //         block: "start",
+                //         behavior: "smooth"
+                //     });
 
-                }, 2000);
+                // }, 2000);
 
             }
         }

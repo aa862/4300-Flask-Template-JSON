@@ -83,7 +83,8 @@
     height: 20px;
     width: 20px;
 }
-.input-box-long{
+
+.input-box-long {
     border-radius: 50px;
     border: 1px solid black;
     display: flex;
@@ -97,6 +98,7 @@
     height: 20px;
     width: 20px;
 }
+
 .top-text {
     display: flex;
     flex-direction: column;
@@ -111,6 +113,7 @@
     color: white;
 
 }
+
 .input-box-long input {
     width: 100%;
     font-size: 16px;
@@ -148,10 +151,26 @@
     /* Firefox */
 }
 
-.episode-title {
-    font-family: 'Kanit', sans-serif;
+.output-result {
+    /* background-color: #f0ecc9; */
+    background-color: #ebe4d5;
+    padding: 5%;
+    border-radius: 10px;
+    margin-bottom: 10px;
 }
 
-.episode-desc {
+.book-title {
+    font-family: 'Kanit', sans-serif;
+    text-align: center;
+}
+
+.book-author,
+.book-ratings,
+.book-genres,
+.book-ban-info {
+    text-align: center;
+}
+
+.book-desc {
     font-family: 'Montserrat', sans-serif;
 }
