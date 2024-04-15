@@ -26,6 +26,63 @@ json_file_path = os.path.join(current_directory, 'compressed_df.json')
 app = Flask(__name__)
 CORS(app)
 
+
+fields_to_print = ['title','authors','ban_info', 'summary']
+# Sample search using json with pandas
+def title_search(query):
+    """
+    Returns a json of the most similar documents to the query.
+    
+    Similarity is determined using a boolean AND search between
+    the words of the query.
+    """
+    df = pd.read_csv("final1.csv")
+
+    pd_title = df['title']
+    title_inv_idx = analysis.build_doc_inverted_index(pd_title)
+    tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
+    #results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
+    print(pd_title)
+    results = analysis.edit_distance_search(query, pd_title, analysis.insertion_cost, analysis.deletion_cost, analysis.substitution_cost)
+    
+    results = analysis.get_titleidx(results,title_inv_idx)
+    #print(results)
+    matches_filtered = df.iloc[results]
+    print(matches_filtered)
+    matches_filtered = matches_filtered[fields_to_print]
+
+    all_ban_info = matches_filtered['ban_info']
+    #print(all_ban_info)
+    print("watch out")
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+    jsonified = matches_filtered.to_json(orient='records')
+    # print(jsonified)
+    return jsonified
+
+# def theme_search(query):
+#     """
+#     Returns a json of the most similar documents to the query.
+    
+#     Similarity is determined using cosine similarity
+#     between the query and the summaries of all the books.
+#     """
+#     df = pd.read_csv("final1.csv")
+    
+#     nan_variable = "summary"
+#     df_cleaned = df[nan_variable].fillna('')
+#     lst_blurb = df_cleaned
+
+#     cossim_results = analysis.get_doc_rankings(query, lst_blurb)
+#     matches_filtered = df.iloc[cossim_results]
+#     matches_filtered = matches_filtered[fields_to_print]
+
+#     all_ban_info = matches_filtered['ban_info']
+#     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+#     jsonified = matches_filtered.to_json(orient='records')
+#     return jsonified
+
 ### Constants ###
 
 # the number of results to print on the screen.
@@ -34,6 +91,7 @@ NUM_RESULTS_TO_PRINT = 10
 FIELDS_TO_PRINT = ['title','authors','ban_info', 'summary']
 
 ### Search Helper Functions ###
+
 
 def build_ban_freq_dict(ban_info_str: str) -> dict:
     """
@@ -48,14 +106,20 @@ def build_ban_freq_dict(ban_info_str: str) -> dict:
     element of that delimited list.
     """
     state_freq_dict = {}
-    reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
-    for reg_info in reg_info_lst:
-        data_fields = reg_info.split(",")
-        state = data_fields[1].strip()
-        if state in state_freq_dict:
-            state_freq_dict[state] += 1
-        else:
-            state_freq_dict[state] = 1
+    try:
+        reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
+
+    except:
+        print(ban_info_str)
+    
+    else:
+        for reg_info in reg_info_lst:
+            data_fields = reg_info.split(",")
+            state = data_fields[1].strip()
+            if state in state_freq_dict:
+                state_freq_dict[state] += 1
+            else:
+                state_freq_dict[state] = 1
     return state_freq_dict
 
 def build_new_ban_info_col(df_col):
@@ -90,28 +154,28 @@ def build_new_ban_info_col(df_col):
 
 ### Searches ###
 
-def title_search(query):
-    """
-    Returns a json of the most similar documents to the query.
+# def title_search(query):
+#     """
+#     Returns a json of the most similar documents to the query.
     
-    Similarity is determined using a boolean AND search between
-    the words of the query.
-    """
-    df = pd.read_csv("final1.csv")
+#     Similarity is determined using a boolean AND search between
+#     the words of the query.
+#     """
+#     df = pd.read_csv("final1.csv")
 
-    pd_title = df['title']
-    title_inv_idx = analysis.build_doc_inverted_index(pd_title)
-    tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
-    results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
+#     pd_title = df['title']
+#     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
+#     tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
+#     results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
     
-    matches_filtered = df.iloc[results]
-    matches_filtered = matches_filtered[FIELDS_TO_PRINT]
+#     matches_filtered = df.iloc[results]
+#     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
 
-    all_ban_info = matches_filtered['ban_info']
-    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+#     all_ban_info = matches_filtered['ban_info']
+#     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
 
-    jsonified = matches_filtered.to_json(orient='records')
-    return jsonified
+#     jsonified = matches_filtered.to_json(orient='records')
+#     return jsonified
 
 def theme_search_cossim(query):
     """
