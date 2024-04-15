@@ -21,7 +21,7 @@ def insertion_cost(message, j):
 
 
 def deletion_cost(query, i):
-    return .2
+    return 1
 
 
 def substitution_cost(query, message, i, j):
