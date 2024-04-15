@@ -154,7 +154,7 @@
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
                         if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
-                            document.getElementById("answer-box").innerHTML = "Title search results:"
+                            document.getElementById("answer-box").innerHTML = "Review search results:"
                         }
                         document.getElementById("answer-box").appendChild(tempDiv)
 
