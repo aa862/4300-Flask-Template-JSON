@@ -26,6 +26,7 @@ json_file_path = os.path.join(current_directory, 'compressed_df.json')
 app = Flask(__name__)
 CORS(app)
 
+
 fields_to_print = ['title','authors','ban_info', 'summary']
 # Sample search using json with pandas
 def title_search(query):
@@ -59,28 +60,38 @@ def title_search(query):
     # print(jsonified)
     return jsonified
 
-def theme_search(query):
-    """
-    Returns a json of the most similar documents to the query.
+# def theme_search(query):
+#     """
+#     Returns a json of the most similar documents to the query.
     
-    Similarity is determined using cosine similarity
-    between the query and the summaries of all the books.
-    """
-    df = pd.read_csv("final1.csv")
+#     Similarity is determined using cosine similarity
+#     between the query and the summaries of all the books.
+#     """
+#     df = pd.read_csv("final1.csv")
     
-    nan_variable = "summary"
-    df_cleaned = df[nan_variable].fillna('')
-    lst_blurb = df_cleaned
+#     nan_variable = "summary"
+#     df_cleaned = df[nan_variable].fillna('')
+#     lst_blurb = df_cleaned
 
-    cossim_results = analysis.get_doc_rankings(query, lst_blurb)
-    matches_filtered = df.iloc[cossim_results]
-    matches_filtered = matches_filtered[fields_to_print]
+#     cossim_results = analysis.get_doc_rankings(query, lst_blurb)
+#     matches_filtered = df.iloc[cossim_results]
+#     matches_filtered = matches_filtered[fields_to_print]
 
-    all_ban_info = matches_filtered['ban_info']
-    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+#     all_ban_info = matches_filtered['ban_info']
+#     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
 
-    jsonified = matches_filtered.to_json(orient='records')
-    return jsonified
+#     jsonified = matches_filtered.to_json(orient='records')
+#     return jsonified
+
+### Constants ###
+
+# the number of results to print on the screen.
+NUM_RESULTS_TO_PRINT = 10
+# the fields of the json to print
+FIELDS_TO_PRINT = ['title','authors','ban_info', 'summary']
+
+### Search Helper Functions ###
+
 
 def build_ban_freq_dict(ban_info_str: str) -> dict:
     """
@@ -140,6 +151,81 @@ def build_new_ban_info_col(df_col):
         new_lst.append(state_ban_info_str[:-2])
     return new_lst
 
+
+### Searches ###
+
+# def title_search(query):
+#     """
+#     Returns a json of the most similar documents to the query.
+    
+#     Similarity is determined using a boolean AND search between
+#     the words of the query.
+#     """
+#     df = pd.read_csv("final1.csv")
+
+#     pd_title = df['title']
+#     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
+#     tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
+#     results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
+    
+#     matches_filtered = df.iloc[results]
+#     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
+
+#     all_ban_info = matches_filtered['ban_info']
+#     matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+#     jsonified = matches_filtered.to_json(orient='records')
+#     return jsonified
+
+def theme_search_cossim(query):
+    """
+    Returns a json of the most similar documents to the query.
+    
+    Similarity is determined using cosine similarity
+    between the query and the summaries of all the books.
+    """
+    df = pd.read_csv("final1.csv")
+    
+    nan_variable = "summary"
+    df_cleaned = df[nan_variable].fillna('')
+    lst_blurb = df_cleaned
+
+    cossim_results = analysis.get_doc_rankings(query, lst_blurb, NUM_RESULTS_TO_PRINT)
+    matches_filtered = df.iloc[cossim_results]
+    matches_filtered = matches_filtered[FIELDS_TO_PRINT]
+
+    all_ban_info = matches_filtered['ban_info']
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+    jsonified = matches_filtered.to_json(orient='records')
+    return jsonified
+
+def theme_search_svd(query):
+    """
+    Returns a json of the most similar documents to the query.
+    
+    Similarity is determined using SVD similarity
+    between the query and the summaries of all the books.
+    """
+    df = pd.read_csv("final1.csv")
+    nan_variable = "summary"
+    df_cleaned = df[nan_variable].fillna('')
+    lst_blurb = df_cleaned
+
+    docs_compressed_normed, words_compressed_normed, query_vec = analysis.svd_analysis(lst_blurb, query)
+    # MAKE SURE TO TRANSPOSE words_compressed_normed!!!
+    top_matches_lst = analysis.closest_projects_to_query(docs_compressed_normed, words_compressed_normed.T, query_vec)
+
+    # change to JSON for printing
+    matches_filtered = df.iloc[top_matches_lst]
+    matches_filtered = matches_filtered[FIELDS_TO_PRINT]
+
+    all_ban_info = matches_filtered['ban_info']
+    matches_filtered['ban_info'] = build_new_ban_info_col(all_ban_info)
+
+    jsonified = matches_filtered.to_json(orient='records')
+    return jsonified
+
 @app.route("/")
 def home():
     return render_template('index.html',title="sample html")
@@ -152,7 +238,7 @@ def titles_search():
 @app.route("/books")
 def books_search():
     text = request.args.get("title")
-    return theme_search(text)
+    return theme_search_svd(text)
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
