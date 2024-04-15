@@ -35,6 +35,9 @@
     </div>
 
     <script>
+        // Constants
+        const WAITING_MSG = "Loading...";
+        const NO_RESULTS_MSG = "No results.";
 
         function answerBoxTemplate(title, authors, ban_info, summary) {
             return `<div class=''>
@@ -51,21 +54,21 @@
 
         function filterTitles(event) {
             if (event.key === "Enter") {
-                document.getElementById("answer-box").innerHTML = "Loading..."
+                document.getElementById("answer-box").innerHTML = WAITING_MSG
                 console.log(document.getElementById("filter-title-val").value)
                 fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = "Title search results:"
                         }
                         document.getElementById("answer-box").appendChild(tempDiv)
                     }))
                     .then(() => {
-                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
-                            document.getElementById("answer-box").innerHTML = "No results."
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
+                            document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
                         }
                     });
             }
@@ -73,21 +76,21 @@
 
         function filterBooks(event) {
             if (event.key === "Enter") {
-                document.getElementById("answer-box").innerHTML = "Loading..."
+                document.getElementById("answer-box").innerHTML = WAITING_MSG
                 console.log(document.getElementById("filter-book-val").value)
                 fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
                             document.getElementById("answer-box").innerHTML = "Theme search results:"
                         }
                         document.getElementById("answer-box").appendChild(tempDiv);
                     }))
                     .then(() => {
-                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
-                            document.getElementById("answer-box").innerHTML = "No results."
+                        if (document.getElementById("answer-box").innerHTML === WAITING_MSG) {
+                            document.getElementById("answer-box").innerHTML = NO_RESULTS_MSG
                         }
                     });
             }

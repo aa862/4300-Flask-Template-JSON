@@ -202,12 +202,14 @@ def title_search(query, sim_measure_code):
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
 
     If sim_measure_code =
-    - 0: boolean similarity between words of query
+    - 0: boolean similarity between words of query, and if there are no results, edit distance similiarity
     - 1: edit distance similarity between titles of documents
     """
     matches_lst = []
     if sim_measure_code == 0:
         matches_lst = boolean_sim_search(query)
+        if len(matches_lst) == 0:
+            matches_lst  = edit_dist_search(query)
     if sim_measure_code == 1:
         matches_lst = edit_dist_search(query)
     return convert_to_json(matches_lst)
@@ -222,7 +224,7 @@ def theme_search(query, sim_measure_code):
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
 
     If sim_measure_code =
-    - 0: cosine similarity: 
+    - 0: cosine similarity between blurbs 
     - 1: SVD similarity
     """
     matches_lst = []
@@ -239,7 +241,7 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
-    return title_search(text, 1)
+    return title_search(text, 0)
 
 @app.route("/books")
 def books_search():
