@@ -124,7 +124,7 @@ def edit_dist_search(query):
     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
     tok_inv_idx = analysis.build_token_inverted_index(pd_title, title_inv_idx)
     #results = analysis.boolean_search(query, tok_inv_idx, len(pd_title))
-    print(pd_title)
+    # print(pd_title)
     results = analysis.edit_distance_search(query, pd_title, analysis.insertion_cost, analysis.deletion_cost, analysis.substitution_cost)
     
     results = analysis.get_titleidx(results,title_inv_idx)
@@ -137,7 +137,6 @@ def cossim_sim_search(query):
     Similarity is determined using cosine similarity
     between the query and the summaries of all the books.
     """
-    print("here 1")
     df = pd.read_csv("data/finalized_books.csv")
     
     nan_variable = "summary"

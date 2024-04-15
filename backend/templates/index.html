@@ -51,35 +51,45 @@
 
         function filterTitles(event) {
             if (event.key === "Enter") {
-                document.getElementById("answer-box").innerHTML = "No results."
+                document.getElementById("answer-box").innerHTML = "Loading..."
                 console.log(document.getElementById("filter-title-val").value)
                 fetch("/titles?" + new URLSearchParams({ title: document.getElementById("filter-title-val").value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                        if (document.getElementById("answer-box").innerHTML == "No results.") {
+                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
                             document.getElementById("answer-box").innerHTML = "Title search results:"
                         }
                         document.getElementById("answer-box").appendChild(tempDiv)
-                    }));
+                    }))
+                    .then(() => {
+                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
+                            document.getElementById("answer-box").innerHTML = "No results."
+                        }
+                    });
             }
         }
 
         function filterBooks(event) {
             if (event.key === "Enter") {
-                document.getElementById("answer-box").innerHTML = "No results."
+                document.getElementById("answer-box").innerHTML = "Loading..."
                 console.log(document.getElementById("filter-book-val").value)
                 fetch("/books?" + new URLSearchParams({ title: document.getElementById("filter-book-val").value }).toString())
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.summary)
-                        if (document.getElementById("answer-box").innerHTML == "No results.") {
+                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
                             document.getElementById("answer-box").innerHTML = "Theme search results:"
                         }
                         document.getElementById("answer-box").appendChild(tempDiv);
-                    }));
+                    }))
+                    .then(() => {
+                        if (document.getElementById("answer-box").innerHTML == "Loading...") {
+                            document.getElementById("answer-box").innerHTML = "No results."
+                        }
+                    });
             }
         }
 
