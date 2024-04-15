@@ -103,7 +103,7 @@ def boolean_sim_search(query):
     Similarity is determined using a boolean AND search between
     the words of the query.
     """
-    df = pd.read_csv("final1.csv")
+    df = pd.read_csv("data/finalized_books.csv")
 
     pd_title = df['title']
     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
@@ -118,7 +118,7 @@ def edit_dist_search(query):
     Similarity is determined using a boolean AND search between
     the words of the query.
     """
-    df = pd.read_csv("final1.csv")
+    df = pd.read_csv("data/finalized_books.csv")
 
     pd_title = df['title']
     title_inv_idx = analysis.build_doc_inverted_index(pd_title)
@@ -137,13 +137,23 @@ def cossim_sim_search(query):
     Similarity is determined using cosine similarity
     between the query and the summaries of all the books.
     """
-    df = pd.read_csv("final1.csv")
+    print("here 1")
+    df = pd.read_csv("data/finalized_books.csv")
     
     nan_variable = "summary"
     df_cleaned = df[nan_variable].fillna('')
     lst_blurb = df_cleaned
+    reviews = df["reviews"].fillna('')
+    # print("len(reviews):")
+    # print(len(reviews))
+    # print("len(lst_blurb):")
+    # print(len(lst_blurb))
 
-    cossim_results = analysis.get_doc_rankings(query, lst_blurb, NUM_RESULTS)
+    # cossim_results = analysis.get_doc_rankings(query, lst_blurb, NUM_RESULTS)
+    cossim_results = analysis.get_doc_rankings(query, lst_blurb, reviews, NUM_RESULTS, a=0.75, b=0.25)
+    # print("cossim_results:")
+    # print(cossim_results)
+    # print("here 2")
     return cossim_results
 
 def svd_sim_search(query):
@@ -153,14 +163,17 @@ def svd_sim_search(query):
     Similarity is determined using SVD similarity
     between the query and the summaries of all the books.
     """
-    df = pd.read_csv("final1.csv")
-    nan_variable = "summary"
+    df = pd.read_csv("data/finalized_books.csv")
+    nan_variable = "reviews"
     df_cleaned = df[nan_variable].fillna('')
-    lst_blurb = df_cleaned
+    lst_reviews = df_cleaned
+    # genre_lst = df["genres"]
+    # for idx in range(len(lst_reviews)):
+    #     lst_reviews[idx] += genre_lst[idx]
 
-    docs_compressed_normed, words_compressed_normed, query_vec = analysis.svd_analysis(lst_blurb, query)
+    docs_compressed_normed, words_compressed_normed, query_vec = analysis.svd_analysis(lst_reviews, query)
     # MAKE SURE TO TRANSPOSE words_compressed_normed!!!
-    top_matches_lst = analysis.closest_projects_to_query(docs_compressed_normed, words_compressed_normed.T, query_vec, NUM_RESULTS)
+    top_matches_lst = analysis.closest_docs_to_query(docs_compressed_normed, words_compressed_normed.T, query_vec, NUM_RESULTS)
     return top_matches_lst
 
 def convert_to_json(matches_lst):
@@ -169,7 +182,7 @@ def convert_to_json(matches_lst):
 
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
     """
-    df = pd.read_csv("final1.csv")
+    df = pd.read_csv("data/finalized_books.csv")
 
     matches_filtered = df.iloc[matches_lst]
     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
