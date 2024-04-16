@@ -27,12 +27,6 @@
                         onkeypress="performSearch(event, 1)">
                 </div>
 
-                <div class="input-box" onclick="sendFocus('filter-review-val')">
-                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                    <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val"
-                        onkeypress="performSearch(event, 2)">
-                </div>
-
                 <!-- <label class="toggle">
                     <input type="checkbox">
                     <span id="toggle-slider" class="slider"></span>
@@ -68,16 +62,14 @@
         const ANSWER_BOX = document.getElementById('answer-box');
 
         const TITLE_SEARCH_BAR = document.getElementById("filter-title-val");
-        const THEME_SEARCH_BAR_BLURBS = document.getElementById("filter-book-val");
-        const THEME_SEARCH_BAR_REVIEWS = document.getElementById("filter-review-val");
+        const THEME_SEARCH_BAR = document.getElementById("filter-book-val");
 
         const THEME_SEARCH_TOGGLE = document.getElementById("toggle-checkbox");
         const BACK_TO_TOP_BUTTON = document.getElementById("back-to-top-btn");
 
         // Search type constants
         const TITLE_SEARCH = 0;
-        const THEME_SEARCH_BLURB = 1;
-        const THEME_SEARCH_REVIEWS = 2;
+        const THEME_SEARCH = 1;
 
         // Value constants
         // number of px user has to scroll to show back to top button
@@ -146,19 +138,14 @@
                     urlPrepend = "/titles?";
                     searchBar = TITLE_SEARCH_BAR;
                 }
-                else if (type === THEME_SEARCH_BLURB) {
+                else if (type === THEME_SEARCH) {
+                    searchBar = THEME_SEARCH_BAR;
                     if (THEME_SEARCH_TOGGLE.checked == true) {
                         urlPrepend = "/books?";
-                        searchBar = THEME_SEARCH_BAR_BLURBS;
                     }
                     else {
                         urlPrepend = "/reviews?";
-                        searchBar = THEME_SEARCH_BAR_BLURBS;
                     }
-                }
-                else {
-                    urlPrepend = "/reviews?";
-                    searchBar = THEME_SEARCH_BAR_REVIEWS;
                 }
 
                 var url = urlPrepend + new URLSearchParams({ title: searchBar.value }).toString();

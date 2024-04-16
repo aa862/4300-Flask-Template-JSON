@@ -70,9 +70,12 @@
 }
 
 /* Utility classes */
+
 .hidden {
     display: none !important;
 }
+
+/* General */
 
 .input-box {
     border-radius: 50px;
