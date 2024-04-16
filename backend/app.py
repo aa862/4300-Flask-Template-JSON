@@ -277,16 +277,19 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
+    # print("title search")
     return title_search(text, 0)
 
 @app.route("/books")
 def books_search():
     text = request.args.get("title")
+    # print("theme search blurbs")
     return theme_search(text, 0)
 
 @app.route("/reviews")
 def reviews_search():
     text = request.args.get("title")
+    # print("theme search reviews")
     return theme_search(text, 1)
 
 if 'DB_NAME' not in os.environ:

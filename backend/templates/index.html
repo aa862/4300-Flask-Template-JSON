@@ -37,6 +37,14 @@
                     <input type="checkbox">
                     <span id="toggle-slider" class="slider"></span>
                 </label> -->
+                <!-- Toggler -->
+                <div>
+                    <input type="checkbox" id="toggle-checkbox">
+                    <label for="toggle-checkbox" class="toggle">
+                        <div class="on toggle-field">Publisher</div>
+                        <div class="off toggle-field">User</div>
+                    </label>
+                </div>
             </div>
 
         </div>
@@ -58,9 +66,12 @@
 
         // Element Constants
         const ANSWER_BOX = document.getElementById('answer-box');
+
         const TITLE_SEARCH_BAR = document.getElementById("filter-title-val");
         const THEME_SEARCH_BAR_BLURBS = document.getElementById("filter-book-val");
         const THEME_SEARCH_BAR_REVIEWS = document.getElementById("filter-review-val");
+
+        const THEME_SEARCH_TOGGLE = document.getElementById("toggle-checkbox");
         const BACK_TO_TOP_BUTTON = document.getElementById("back-to-top-btn");
 
         // Search type constants
@@ -94,10 +105,8 @@
         function backToTopToggle() {
             if (document.body.scrollTop > BACK_TO_TOP_SHOW_PX || document.documentElement.scrollTop > BACK_TO_TOP_SHOW_PX) {
                 BACK_TO_TOP_BUTTON.classList.remove("hidden");
-                // console.log("removing hidden");
             } else {
                 BACK_TO_TOP_BUTTON.classList.add("hidden");
-                // console.log("adding hidden");
             }
         }
 
@@ -138,8 +147,14 @@
                     searchBar = TITLE_SEARCH_BAR;
                 }
                 else if (type === THEME_SEARCH_BLURB) {
-                    urlPrepend = "/books?";
-                    searchBar = THEME_SEARCH_BAR_BLURBS;
+                    if (THEME_SEARCH_TOGGLE.checked == true) {
+                        urlPrepend = "/books?";
+                        searchBar = THEME_SEARCH_BAR_BLURBS;
+                    }
+                    else {
+                        urlPrepend = "/reviews?";
+                        searchBar = THEME_SEARCH_BAR_BLURBS;
+                    }
                 }
                 else {
                     urlPrepend = "/reviews?";
