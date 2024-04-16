@@ -27,23 +27,25 @@
                         onkeypress="performSearch(event, 1)">
                 </div>
 
+                <div class="input-box" onclick="sendFocus('filter-review-val')">
+                    <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                    <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val"
+                        onkeypress="performSearch(event, 2)">
+                </div>
 
+                <!-- <label class="toggle">
+                    <input type="checkbox">
+                    <span id="toggle-slider" class="slider"></span>
+                </label> -->
             </div>
-            <div class="input-box-long" onclick="sendFocus('filter-review-val2')">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a theme to see what reviews say are similar" id="filter-review-val2"
-                    onkeypress="performSearch(event, 2)">
-            </div>
-
-
-
 
         </div>
         <div id="answer-box">
 
         </div>
 
-
+        <!-- Credits to: https://www.freecodecamp.org/news/back-to-top-button-and-page-progressbar-with-html-css-and-js/, https://www.w3schools.com/jsref/prop_element_scrolltop.asp -->
+        <button id="back-to-top-btn" class="hidden" onclick="goToTop()">Back To Top</button>
     </div>
 
 
@@ -58,12 +60,48 @@
         const ANSWER_BOX = document.getElementById('answer-box');
         const TITLE_SEARCH_BAR = document.getElementById("filter-title-val");
         const THEME_SEARCH_BAR_BLURBS = document.getElementById("filter-book-val");
-        const THEME_SEARCH_BAR_REVIEWS = document.getElementById("filter-review-val2");
+        const THEME_SEARCH_BAR_REVIEWS = document.getElementById("filter-review-val");
+        const BACK_TO_TOP_BUTTON = document.getElementById("back-to-top-btn");
 
         // Search type constants
         const TITLE_SEARCH = 0;
         const THEME_SEARCH_BLURB = 1;
         const THEME_SEARCH_REVIEWS = 2;
+
+        // Value constants
+        // number of px user has to scroll to show back to top button
+        const BACK_TO_TOP_SHOW_PX = 20;
+
+        // Event listeners
+
+        document.addEventListener("scroll", () => {
+            backToTopToggle();
+        })
+
+        // Element specific functions
+
+        function sendFocus(id) {
+            document.getElementById(id).focus()
+        }
+
+        function goToTop() {
+            document.body.scrollIntoView({
+                block: "start",
+                behavior: "smooth"
+            })
+        }
+
+        function backToTopToggle() {
+            if (document.body.scrollTop > BACK_TO_TOP_SHOW_PX || document.documentElement.scrollTop > BACK_TO_TOP_SHOW_PX) {
+                BACK_TO_TOP_BUTTON.classList.remove("hidden");
+                // console.log("removing hidden");
+            } else {
+                BACK_TO_TOP_BUTTON.classList.add("hidden");
+                // console.log("adding hidden");
+            }
+        }
+
+        // Utility functions
 
         function answerBoxTemplate(title, authors, ban_info, genres, ratings, summary) {
 
@@ -75,10 +113,6 @@
                 <p class='book-ban-info'>Banned in: ${ban_info}</p>
                 <p class='book-summary'>${summary}</p>
             </div>`
-        }
-
-        function sendFocus(id) {
-            document.getElementById(id).focus()
         }
 
         function performSearch(event, type) {
@@ -138,5 +172,7 @@
 
             }
         }
+
+
     </script>
 </body>
