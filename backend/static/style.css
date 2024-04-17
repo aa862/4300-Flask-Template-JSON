@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 .full-body-container {
     position: absolute;
     top: 0;
@@ -92,21 +96,6 @@
     width: 20px;
 }
 
-/* .input-box-long {
-    border-radius: 50px;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    margin: 10px;
-    padding: 12px;
-    width: 600px;
-}
-
-.input-box-long img {
-    height: 20px;
-    width: 20px;
-} */
-
 .top-text {
     display: flex;
     flex-direction: column;
@@ -122,16 +111,6 @@
 
 }
 
-/* .input-box-long input {
-    width: 100%;
-    font-size: 16px;
-    border: none;
-    outline: 0;
-    color: white;
-
-} */
-
-
 #answer-box {
     width: 700px;
     margin-top: 50px;
@@ -139,9 +118,14 @@
 
 #searchboxes {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-content: space-between;
+}
 
+#or-block {
+    text-align: center;
+    justify-content: center;
+    margin: auto 0;
 }
 
 
@@ -161,10 +145,12 @@
 
 .output-result {
     /* background-color: #f0ecc9; */
-    background-color: #ebe4d5;
+    /* background-color: #ebe4d5; */
+    background-color: #f1eee8;
     padding: 5%;
     border-radius: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0px 5px 5px #bbbcbc;
 }
 
 .book-title {
@@ -185,47 +171,65 @@
 
 /* Back to top button styling */
 #back-to-top-btn {
+    display: block;
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 8rem;
+    bottom: 5rem;
     z-index: 99;
+    cursor: pointer;
+    font-size: 50px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    text-align: center;
+    justify-content: center;
+    color: white;
+    background-color: #6d9ce7;
+    box-shadow: 0px 5px 5px #bbbcbc;
 }
 
 /* Toggle Styling */
 
+.theme-toggle {
+    border: 2px solid black;
+}
+
+.theme-toggle .toggle {
+    display: flex;
+    flex-direction: column;
+
+    cursor: pointer;
+}
+
 #toggle-checkbox {
+    /* hides checkbox */
+    display: none;
+    visibility: hidden;
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.toggle {
-    display: flex;
-
-    width: 100%;
-    height: 34px;
-    /* border-radius: 34px; */
-    background-color: #ccc;
-    border: 1px solid pink;
-    cursor: pointer;
-}
-
-.toggle:focus {
-    box-shadow: 1 1 5px black;
+.theme-toggle:hover {
+    box-shadow: 5 5 15px black;
     /* why does this not work? */
 }
 
 .toggle-field {
-    flex: 1;
-    text-align: center;
     padding: 8px 16px;
 
     background-color: transparent;
+
+    text-align: center;
+
+    transition: 0.5s;
 }
 
-.on,
-.off {
-    transition: 0.5s;
+.on {
+    border-bottom: 1px solid black;
 }
 
 #toggle-checkbox:checked~.toggle>.on {
@@ -238,36 +242,23 @@
     color: white;
 }
 
-/* .toggle {
-    position: relative;
+/* Loader:  https://cssloaders.github.io/ */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #89CFF0;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 1s linear infinite;
 }
 
-.toggle input {
-    width: 0;
-    height: 0;
-    opacity: 0;
-}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 10;
-    left: 10;
-    right: 10;
-    bottom: 10;
-    background-color: #c0baba;
+    100% {
+        transform: rotate(360deg);
+    }
 }
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 30px;
-    width: 30px;
-    left: 5px;
-    bottom: 5px;
-    background-color: white;
-}
-
-input:checked+.slider {
-    background-color: #f32133;
-} */
