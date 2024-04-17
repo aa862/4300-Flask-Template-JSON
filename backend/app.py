@@ -29,7 +29,7 @@ CORS(app)
 ### Constants ###
 
 # the number of results to print on the screen.
-NUM_RESULTS = 10
+NUM_RESULTS = 50
 # the fields of the json to print
 FIELDS_TO_PRINT = ['title', 'authors', 'ban_info', 'genres', 'ratings', 'summary']
 
@@ -47,7 +47,8 @@ def build_ban_freq_dict(ban_info_str: str) -> dict:
     delimited by commas, and the state is the second
     element of that delimited list.
     """
-    state_freq_dict = {}
+    state_freq_dict = {} 
+    
     try:
         reg_info_lst = ban_info_str.strip().split(";")[:-1] # do we miss final ban here sometimes?
 
@@ -190,17 +191,31 @@ def svd_sim_search(query, docs):
 
 ### Production Conversion ###
 
-def convert_to_json(matches_lst: list):
+def convert_to_json(matches_lst: list, genre = "", state="" ):
     """
     Returns the json of information for the documents in ``matches_lst``.
 
     Each document will have information from the fields in ``FIELDS_TO_PRINT``.
     """
     df = pd.read_csv("data/finalized_books.csv")
-
-    matches_filtered = df.iloc[matches_lst]
+    matches_filtered = matches_lst
+    if genre:
+       print("IN GENREEE")
+       matches_filtered = filter_genre(matches_lst,genre,df)
+       print(f"MATCHES FILTERED GENRE: {matches_filtered}")
+    if state:
+        print("IN STATEE")
+        state_dict = filter_state_helper(df)
+        print(f"STATE_DICT: {state_dict}")
+        print("STATEEE")
+        print(state)
+        matches_filtered = list(set(matches_filtered).intersection(set(state_dict[state])))
+        print(f"MATCHES FILTERED STATE: {matches_filtered}")
+        
+    print(f"MATCHES FILTERED BEFORE: {matches_filtered}")
+    matches_filtered = df.iloc[matches_filtered]
     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
-    
+    print(f"MATCHES FILTERED AFTER: {matches_filtered}")
     # construct new columns for data that needs to be displayed differently
     all_authors_info = matches_filtered['authors']
     matches_filtered["authors"] = build_new_authors_col(all_authors_info)
@@ -213,6 +228,55 @@ def convert_to_json(matches_lst: list):
 
     jsonified = matches_filtered.to_json(orient='records')
     return jsonified
+
+def filter_genre(match_list: list, genre:str, df:pd.DataFrame)->list:
+    """
+    Returns an instance of match_list where only the indices with the specified
+    genre are returned.
+
+    match_list: the initial list of indices
+    genre: the wanted genre
+    df: the dataframe of all the documents, must have column 'Genre' in it.
+    """
+   
+    genre_only_lst = []
+    for index,  row in df.iterrows():
+        genres_in_book = row['genres'].strip().split(', ')
+        # print(f"GENRESINBOOK {genres_in_book}")
+        if genre in genres_in_book:
+            genre_only_lst.append(index)
+    print(f" GENRE is : {genre}")
+    print(f"GenreLIst {genre_only_lst}")
+    print(f" MatchList {match_list} Length : {len(match_list)}")
+    temp = list(set(genre_only_lst).intersection(set(match_list)))
+    print(f"TEMP : {temp}")
+    return temp
+
+def filter_state_helper(df):
+    """
+    returns a dictionary that maps states to the indices of banned books in that
+    state
+
+    df: the dataframe with column state
+    """
+    result = {}
+
+    for index, row in df.iterrows():
+        try:
+            # print("In TRY")
+            reg_info_lst = row['ban_info'].strip().split(";")[:-1]
+        except:
+            # print("In EXCEPT")
+            raise Exception ("Couldnt split file")
+        else:
+            #print("In ELSE")
+            for reg_info in reg_info_lst:
+                data_fields = reg_info.split(",")
+                state = data_fields[1].strip()
+                result[state] = result.get(state, [])  + [index]
+
+    return result 
+
 
 ### Funcions to be called in HTML ###
 
@@ -242,7 +306,7 @@ def title_search(query, sim_measure_code):
         matches_lst = edit_dist_search(query, docs)
     return convert_to_json(matches_lst)
 
-def theme_search(query, sim_measure_code):
+def theme_search(query, sim_measure_code, state="", genre=""):
     """
     Returns the a JSON with the information on the documents
     with the ``NUM_RESULTS`` most similar themes
@@ -259,16 +323,21 @@ def theme_search(query, sim_measure_code):
 
     cossim_docs = df["summary"].fillna('')
     svd_docs = df["reviews"].fillna('')
+
+    # state_dict = filter_state_helper(df)
     # genre_lst = df["genres"]
     # for idx in range(len(lst_reviews)):
     #     lst_reviews[idx] += genre_lst[idx]
 
     matches_lst = []
     if sim_measure_code == 0:
+        print(f"QUERY: {query}")
         matches_lst = cossim_sim_search(query, cossim_docs)
+        print(f"MATCHES LIST COSSIM: {matches_lst}")
     if sim_measure_code == 1:
         matches_lst = svd_sim_search(query, svd_docs)
-    return convert_to_json(matches_lst)
+
+    return convert_to_json(matches_lst,genre,state)
 
 @app.route("/")
 def home():
@@ -283,14 +352,21 @@ def titles_search():
 @app.route("/books")
 def books_search():
     text = request.args.get("title")
+    genre = request.args.get("genre")
+    state = request.args.get("state")
+    print(f"GENNEREEEE {genre}")
+    # do request.args to get the state or genre NOTE: they might be null 
     # print("theme search blurbs")
-    return theme_search(text, 0)
-
+    return theme_search(text, 0,state,genre)
 @app.route("/reviews")
 def reviews_search():
     text = request.args.get("title")
+    genre = request.args.get("genre")
+    state = request.args.get("state")
+    
+    # do request.args to get the state or genre NOTE: they might be null 
     # print("theme search reviews")
-    return theme_search(text, 1)
+    return theme_search(text, 1 ,state,genre)
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True,host="0.0.0.0",port=5000)
