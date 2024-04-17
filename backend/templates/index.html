@@ -543,6 +543,7 @@
 
                 var url = urlPrepend + new URLSearchParams({ title: searchBar.value, genre: GENRE_BUTTON.value, state: STATE_BUTTON.value }).toString();
                 console.log(searchBar.value);
+                toggleVisibility(LOADER);
                 console.log(GENRE_BUTTON.value);
                 toggleVisibility(LOADER);
                 // fetch data
