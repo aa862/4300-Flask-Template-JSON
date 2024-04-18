@@ -306,7 +306,7 @@ def title_search(query, sim_measure_code):
         matches_lst = edit_dist_search(query, docs)
     return convert_to_json(matches_lst)
 
-def theme_search(query, sim_measure_code, state="", genre=""):
+def theme_search(query="", sim_measure_code=0, state="", genre=""):
     """
     Returns the a JSON with the information on the documents
     with the ``NUM_RESULTS`` most similar themes
@@ -336,6 +336,9 @@ def theme_search(query, sim_measure_code, state="", genre=""):
         # print(f"MATCHES LIST COSSIM: {matches_lst}")
     if sim_measure_code == 1:
         matches_lst = svd_sim_search(query, svd_docs)
+
+    if query == "":
+        matches_lst = list(range(len(df)))
 
     return convert_to_json(matches_lst,genre,state)
 
