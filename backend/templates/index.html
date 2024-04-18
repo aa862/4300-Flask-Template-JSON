@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
     rel="stylesheet">
 
-<body>
+<body onload="restoreDefaults()">
     <div class="full-body-container" id="page">
         <div id="s12"></div>
         <div class="top-text" id="se">
@@ -33,9 +33,11 @@
             <div id="searchboxes" style="position: absolute; top: 41%; transform: translateY(-50%);">
                 <div class="input-box" onclick="sendFocus('filter-title-val')">
                     <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                    <input placeholder="Search for the title of a banned book" id="filter-title-val"
+                    <input placeholder="Search for the title of a book" id="filter-title-val"
                         onkeypress="performSearch(event, 0)">
                 </div>
+
+                <div id="or-block">OR</div>
 
                 <div class="input-box" onclick="sendFocus('filter-book-val')">
                     <img src="{{ url_for('static', filename='images/mag.png') }}" />
@@ -535,12 +537,27 @@
             })
         }
 
+        function toggleVisibility(elem) {
+            if (elem.classList.contains("hidden")) {
+                elem.classList.remove("hidden");
+            }
+            else {
+                elem.classList.add("hidden");
+            }
+        }
+
         function backToTopToggle() {
             if (document.body.scrollTop > BACK_TO_TOP_SHOW_PX || document.documentElement.scrollTop > BACK_TO_TOP_SHOW_PX) {
                 BACK_TO_TOP_BUTTON.classList.remove("hidden");
             } else {
                 BACK_TO_TOP_BUTTON.classList.add("hidden");
             }
+        }
+
+        function restoreDefaults() {
+            TITLE_SEARCH_BAR.value = "";
+            THEME_SEARCH_BAR.value = "";
+            THEME_SEARCH_TOGGLE.checked = true;
         }
 
         // Utility functions
@@ -613,6 +630,7 @@
                             block: "start",
                             behavior: "smooth"
                         });
+                        toggleVisibility(LOADER);
                     });
 
             }
