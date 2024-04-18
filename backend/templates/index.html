@@ -8,38 +8,39 @@
 
 <body>
 
-<div class="full-body-container" id="page">
-    <div id="s12"></div>
-    <div class="top-text" id="se">
-        <div class="google-colors">
-            <h1 id="google-4">Censored Books</h1>
+    <div class="full-body-container" id="page">
+        <div id="s12"></div>
+        <div class="top-text" id="se">
+            <div class="google-colors">
+                <h1 id="google-4">Censored Books</h1>
+            </div>
+            <div style="max-width: 1200px; padding: .8%; border-radius: 3px; ">
+                <p style="margin: 0; color: #333; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6;">
+                    From July 2021 to June 2022, over 2,500 books were banned in schools and
+                    libraries across the United States.
+
+                    Use the toggle to change how the theme search searches
+                    for books. The "Publisher" setting searches through
+                    blurbs for similar books, while the "User" setting
+                    searches through user reviews to find similar
+                    books.
+                </p>
+            </div>
+            <!-- Loader -->
+            <!-- Credits to: https://www.w3schools.com/howto/howto_css_loader.asp, https://cssloaders.github.io/ -->
+            <div id="loader" class="loader hidden" style="position: absolute; top: 80%; transform: translateY(-50%);">
+            </div>
+
+
         </div>
-        <div style="max-width: 1200px; padding: .8%; border-radius: 3px; ">
-            <p style="margin: 0; color: #333; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6;">
-                From July 2021 to June 2022, over 2,500 books were banned in schools and
-                libraries across the United States.
-          
-                Use the toggle to change how the theme search searches
-                for books. The "Publisher" setting searches through
-                blurbs for similar books, while the "User" setting
-                searches through user reviews to find similar
-                books.
-            </p>
-        </div>
-        <!-- Loader -->
-        <!-- Credits to: https://www.w3schools.com/howto/howto_css_loader.asp, https://cssloaders.github.io/ -->
-        <div id="loader" class="loader hidden"style="position: absolute; top: 80%; transform: translateY(-50%);" ></div>
-  
-  
-    </div>
         <!-- Search Boxes (Will convert to style.css later)-->
         <div id="searchboxes" style="position: absolute; top: 41%; transform: translateY(-50%);">
             <div class="input-box" onclick="sendFocus('filter-title-val')">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for the title of a banned book" id="filter-title-val"
+                <input placeholder="Search for the title of a book" id="filter-title-val"
                     onkeypress="performSearch(event, 0)">
             </div>
-  
+
             <div id="or-block">OR</div>
             <div class="input-box" onclick="sendFocus('filter-book-val')">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
@@ -47,13 +48,13 @@
                     onkeypress="performSearch(event, 1)">
             </div>
         </div>
-  
-  
+
+
         <!-- Toggler (Will convert to style.css later) -->
         <div style="position: absolute; right: 15%; top: 55%; transform: translateY(-50%);">
             <h2 style="font-family: 'Arial', sans-serif; color: #333; text-align: left;
-            padding-left: 5px; margin-bottom: 20px;" >
-            Based On
+            padding-left: 5px; margin-bottom: 20px;">
+                Based On
             </h2>
             <div class="theme-toggle ">
                 <input type="checkbox" id="toggle-checkbox">
@@ -63,31 +64,27 @@
                 </label>
             </div>
         </div>
-  
-  
+
+
         <!-- FILTERS (Will convert to style.css later)-->
         <div style="position: absolute; left: 5%; top: 60%; transform: translateY(-50%);">
             <h2 style="font-family: 'Arial', sans-serif; color: #333; text-align: left;
                 padding-left: 5px; margin-bottom: 20px; margin-left: 15%;">
                 Optional Filters
             </h2>
-            <div class="input-box" onclick="sendFocus('state-input')"
-            style="background: transparent; border: none;">
-              <input placeholder="Filter by State" id="state-input" name="state" list="states"
-                     style="background-color: transparent; outline: none;
+            <div class="input-box" onclick="sendFocus('state-input')" style="background: transparent; border: none;">
+                <input placeholder="Filter by State" id="state-input" name="state" list="states" style="background-color: transparent; outline: none;
                      border: 1px solid black; border-radius: 25px;
                      padding: 8px 20px; color: black;
                      font-size: 16px; width: 250px;">
             </div>
-            <div class="input-box" onclick="sendFocus('genre-input')"
-            style="background: transparent; border: none;">
-              <input placeholder="Filter by Genre" id="genre-input" name="genre" list="genres"
-                     style="background-color: transparent; outline: none;
+            <div class="input-box" onclick="sendFocus('genre-input')" style="background: transparent; border: none;">
+                <input placeholder="Filter by Genre" id="genre-input" name="genre" list="genres" style="background-color: transparent; outline: none;
                      border: 1px solid black; border-radius: 25px;
                      padding: 8px 20px; color: black;
                      font-size: 16px; width: 250px;">
             </div>
-          </div>
+        </div>
         <datalist id="states">
             <option value="Alabama"></option>
             <option value="Alaska"></option>
@@ -419,13 +416,13 @@
             <option value="Thriller">Thriller</option>
             <option value="Spain">Spain</option>
         </datalist>
-  
-    <div id="answer-box">
+
+        <div id="answer-box">
+        </div>
+        <!-- Credits to: https://www.freecodecamp.org/news/back-to-top-button-and-page-progressbar-with-html-css-and-js/, https://www.w3schools.com/jsref/prop_element_scrolltop.asp -->
+        <button id="back-to-top-btn" class="hidden" onclick="goToTop()">^</button>
     </div>
-     <!-- Credits to: https://www.freecodecamp.org/news/back-to-top-button-and-page-progressbar-with-html-css-and-js/, https://www.w3schools.com/jsref/prop_element_scrolltop.asp -->
-     <button id="back-to-top-btn" class="hidden" onclick="goToTop()">^</button>
-  </div>
-    
+
 
 
     <script>
@@ -455,9 +452,9 @@
         // number of px user has to scroll to show back to top button
         const BACK_TO_TOP_SHOW_PX = 20;
 
-         // Event listeners
+        // Event listeners
 
-         document.addEventListener("scroll", () => {
+        document.addEventListener("scroll", () => {
             backToTopToggle();
         })
 
@@ -501,7 +498,7 @@
 
         function answerBoxTemplate(title, authors, ban_info, genres, ratings, summary) {
 
-        return `<div class='output-result'>
+            return `<div class='output-result'>
             <h3 class='book-title'>${title}</h3>
             <p class='book-author'>By ${authors}</p>
             <p class='book-ratings'>${ratings} stars</p>

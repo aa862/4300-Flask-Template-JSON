@@ -200,22 +200,22 @@ def convert_to_json(matches_lst: list, genre = "", state="" ):
     df = pd.read_csv("data/finalized_books.csv")
     matches_filtered = matches_lst
     if genre:
-       print("IN GENREEE")
+    #    print("IN GENREEE")
        matches_filtered = filter_genre(matches_lst,genre,df)
-       print(f"MATCHES FILTERED GENRE: {matches_filtered}")
+    #    print(f"MATCHES FILTERED GENRE: {matches_filtered}")
     if state:
-        print("IN STATEE")
+        # print("IN STATEE")
         state_dict = filter_state_helper(df)
-        print(f"STATE_DICT: {state_dict}")
-        print("STATEEE")
-        print(state)
+        # print(f"STATE_DICT: {state_dict}")
+        # print("STATEEE")
+        # print(state)
         matches_filtered = list(set(matches_filtered).intersection(set(state_dict[state])))
-        print(f"MATCHES FILTERED STATE: {matches_filtered}")
+        # print(f"MATCHES FILTERED STATE: {matches_filtered}")
         
-    print(f"MATCHES FILTERED BEFORE: {matches_filtered}")
+    # print(f"MATCHES FILTERED BEFORE: {matches_filtered}")
     matches_filtered = df.iloc[matches_filtered]
     matches_filtered = matches_filtered[FIELDS_TO_PRINT]
-    print(f"MATCHES FILTERED AFTER: {matches_filtered}")
+    # print(f"MATCHES FILTERED AFTER: {matches_filtered}")
     # construct new columns for data that needs to be displayed differently
     all_authors_info = matches_filtered['authors']
     matches_filtered["authors"] = build_new_authors_col(all_authors_info)
@@ -245,11 +245,11 @@ def filter_genre(match_list: list, genre:str, df:pd.DataFrame)->list:
         # print(f"GENRESINBOOK {genres_in_book}")
         if genre in genres_in_book:
             genre_only_lst.append(index)
-    print(f" GENRE is : {genre}")
-    print(f"GenreLIst {genre_only_lst}")
-    print(f" MatchList {match_list} Length : {len(match_list)}")
+    # print(f" GENRE is : {genre}")
+    # print(f"GenreLIst {genre_only_lst}")
+    # print(f" MatchList {match_list} Length : {len(match_list)}")
     temp = list(set(genre_only_lst).intersection(set(match_list)))
-    print(f"TEMP : {temp}")
+    # print(f"TEMP : {temp}")
     return temp
 
 def filter_state_helper(df):
@@ -331,9 +331,9 @@ def theme_search(query, sim_measure_code, state="", genre=""):
 
     matches_lst = []
     if sim_measure_code == 0:
-        print(f"QUERY: {query}")
+        # print(f"QUERY: {query}")
         matches_lst = cossim_sim_search(query, cossim_docs)
-        print(f"MATCHES LIST COSSIM: {matches_lst}")
+        # print(f"MATCHES LIST COSSIM: {matches_lst}")
     if sim_measure_code == 1:
         matches_lst = svd_sim_search(query, svd_docs)
 
@@ -346,7 +346,7 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
-    # print("title search")
+    print("title search")
     return title_search(text, 0)
 
 @app.route("/books")
@@ -354,12 +354,13 @@ def books_search():
     text = request.args.get("title")
     genre = request.args.get("genre")
     state = request.args.get("state")
-    print(f"GENNEREEEE {genre}")
     # do request.args to get the state or genre NOTE: they might be null 
     # print("theme search blurbs")
+    print("Blurbbbbbbbb")
     return theme_search(text, 0,state,genre)
 @app.route("/reviews")
 def reviews_search():
+    print("reviews search")
     text = request.args.get("title")
     genre = request.args.get("genre")
     state = request.args.get("state")
@@ -369,4 +370,4 @@ def reviews_search():
     return theme_search(text, 1 ,state,genre)
 
 if 'DB_NAME' not in os.environ:
-    app.run(debug=True,host="0.0.0.0",port=5000)
+    app.run(debug=True,host="0.0.0.0",port=5002)
