@@ -206,10 +206,11 @@ def convert_to_json(matches_lst: list, genre = "", state="" ):
     if state:
         # print("IN STATEE")
         state_dict = filter_state_helper(df)
+        
         # print(f"STATE_DICT: {state_dict}")
         # print("STATEEE")
         # print(state)
-        matches_filtered = list(set(matches_filtered).intersection(set(state_dict[state])))
+        matches_filtered = list(set(matches_filtered).intersection(set(state_dict.get(state,set()))))
         # print(f"MATCHES FILTERED STATE: {matches_filtered}")
         
     # print(f"MATCHES FILTERED BEFORE: {matches_filtered}")
