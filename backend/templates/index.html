@@ -37,6 +37,7 @@
             <div class="input-box" onclick="sendFocus('filter-title-val')">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Search for the title of a banned book" id="filter-title-val"
+                <input placeholder="Search for the title of a banned book" id="filter-title-val"
                     onkeypress="performSearch(event, 0)">
             </div>
 
@@ -47,15 +48,16 @@
                     onkeypress="performSearch(event, 1)">
             </div>
         </div>
-
-
+  
+  
         <!-- Toggler (Will convert to style.css later) -->
         <div style="position: absolute; right: 15%; top: 55%; transform: translateY(-50%);">
             <h2 style="font-family: 'Arial', sans-serif; color: #333; text-align: left;
-            padding-left: 5px; margin-bottom: 20px;">
-                Based On
+            padding-left: 5px; margin-bottom: 20px;" >
+            Based On
             </h2>
             <div class="theme-toggle ">
+                <input type="checkbox" id="toggle-checkbox" onkeypress="performSearch(event, 1)">
                 <input type="checkbox" id="toggle-checkbox" onkeypress="performSearch(event, 1)">
                 <label for="toggle-checkbox" class="toggle">
                     <div class="on toggle-field">Publisher</div>
@@ -63,27 +65,32 @@
                 </label>
             </div>
         </div>
-
-
+  
+  
         <!-- FILTERS (Will convert to style.css later)-->
         <div style="position: absolute; left: 5%; top: 60%; transform: translateY(-50%);">
             <h2 style="font-family: 'Arial', sans-serif; color: #333; text-align: left;
                 padding-left: 5px; margin-bottom: 20px; margin-left: 15%;">
                 Optional Filters
             </h2>
-            <div class="input-box" onclick="sendFocus('state-input')" style="background: transparent; border: none;">
-                <input placeholder="Filter by State" id="state-input" name="state" list="states" style="background-color: transparent; outline: none;
+            <div class="input-box" onclick="sendFocus('state-input')"
+            style="background: transparent; border: none;">
+              <input placeholder="Filter by State" id="state-input" name="state" list="states"
+                     style="background-color: transparent; outline: none;
+                     border: 1px solid black; border-radius: 25px;
+                     padding: 8px 20px; color: black;
+                     font-size: 16px; width: 250px;" onkeypress="performSearch(event, 1)" >
+            </div>
+            <div class="input-box" onclick="sendFocus('genre-input')"
+            style="background: transparent; border: none;">
+              <input placeholder="Filter by Genre" id="genre-input" name="genre" list="genres"
+                     style="background-color: transparent; outline: none;
                      border: 1px solid black; border-radius: 25px;
                      padding: 8px 20px; color: black;
                      font-size: 16px; width: 250px;" onkeypress="performSearch(event, 1)">
-            </div>
-            <div class="input-box" onclick="sendFocus('genre-input')" style="background: transparent; border: none;">
-                <input placeholder="Filter by Genre" id="genre-input" name="genre" list="genres" style="background-color: transparent; outline: none;
-                     border: 1px solid black; border-radius: 25px;
-                     padding: 8px 20px; color: black;
                      font-size: 16px; width: 250px;" onkeypress="performSearch(event, 1)">
             </div>
-        </div>
+          </div>
         <datalist id="states">
             <option value="Alabama"></option>
             <option value="Alaska"></option>
@@ -415,13 +422,13 @@
             <option value="Thriller">Thriller</option>
             <option value="Spain">Spain</option>
         </datalist>
-
-        <div id="answer-box">
-        </div>
-        <!-- Credits to: https://www.freecodecamp.org/news/back-to-top-button-and-page-progressbar-with-html-css-and-js/, https://www.w3schools.com/jsref/prop_element_scrolltop.asp -->
-        <button id="back-to-top-btn" class="hidden" onclick="goToTop()">^</button>
+  
+    <div id="answer-box">
     </div>
-
+     <!-- Credits to: https://www.freecodecamp.org/news/back-to-top-button-and-page-progressbar-with-html-css-and-js/, https://www.w3schools.com/jsref/prop_element_scrolltop.asp -->
+     <button id="back-to-top-btn" class="hidden" onclick="goToTop()">^</button>
+  </div>
+    
 
 
     <script>
@@ -451,9 +458,9 @@
         // number of px user has to scroll to show back to top button
         const BACK_TO_TOP_SHOW_PX = 20;
 
-        // Event listeners
+         // Event listeners
 
-        document.addEventListener("scroll", () => {
+         document.addEventListener("scroll", () => {
             backToTopToggle();
         })
 
@@ -569,14 +576,14 @@
                         let tempDiv = document.createElement("div");
                         tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary, queryWords); // Pass the queryWords to the answerBoxTemplate function
                         if (ANSWER_BOX.innerHTML === WAITING_MSG) {
-                            ANSWER_BOX.innerHTML = resultsHeadingMsg;
+                            ANSWER_BOX.innerHTML = resultsHeadingMsg + (". Showing " + data.length + " results " + (STATE_BUTTON.value ? " for  " + (STATE_BUTTON.value) : ""));
                         }
                         ANSWER_BOX.appendChild(tempDiv);
                     }))
                     .then(() => {
                         // check for no results, scroll screen
                         if (ANSWER_BOX.innerHTML === WAITING_MSG) {
-                            ANSWER_BOX.innerHTML = NO_RESULTS_MSG;
+                            ANSWER_BOX.innerHTML = NO_RESULTS_MSG + (STATE_BUTTON.value ? "for " + (STATE_BUTTON.value) : "");
                         }
                         ANSWER_BOX.scrollIntoView({
                             block: "start",
