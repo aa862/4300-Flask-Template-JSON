@@ -37,7 +37,6 @@
             <div class="input-box" onclick="sendFocus('filter-title-val')">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Search for the title of a banned book" id="filter-title-val"
-                <input placeholder="Search for the title of a banned book" id="filter-title-val"
                     onkeypress="performSearch(event, 0)">
             </div>
 
@@ -57,7 +56,6 @@
             Based On
             </h2>
             <div class="theme-toggle ">
-                <input type="checkbox" id="toggle-checkbox" onkeypress="performSearch(event, 1)">
                 <input type="checkbox" id="toggle-checkbox" onkeypress="performSearch(event, 1)">
                 <label for="toggle-checkbox" class="toggle">
                     <div class="on toggle-field">Publisher</div>
@@ -88,7 +86,7 @@
                      border: 1px solid black; border-radius: 25px;
                      padding: 8px 20px; color: black;
                      font-size: 16px; width: 250px;" onkeypress="performSearch(event, 1)">
-                     font-size: 16px; width: 250px;" onkeypress="performSearch(event, 1)">
+        
             </div>
           </div>
         <datalist id="states">
