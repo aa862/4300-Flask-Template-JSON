@@ -520,10 +520,14 @@
             var isPublisher = document.getElementById('toggle-checkbox').checked;
             performSearch(event, isPublisher ? 1 : 0);
         }
+
         function performSearch(event, type) {
             if (event.key === "Enter") {
                 // Capture the query from the search input box
                 const query = type === TITLE_SEARCH ? TITLE_SEARCH_BAR.value : THEME_SEARCH_BAR.value;
+
+                // Split the query into individual words
+                const queryWords = query.trim().split(/\s+/);
 
                 // set answer box to waiting
                 ANSWER_BOX.innerHTML = WAITING_MSG;
@@ -563,12 +567,12 @@
                 fetch(url)
                     .then((response) => response.json())
                     .then((data) => data.forEach(row => {
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary, query) // Pass the query to the answerBoxTemplate function
+                        let tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary, queryWords); // Pass the queryWords to the answerBoxTemplate function
                         if (ANSWER_BOX.innerHTML === WAITING_MSG) {
                             ANSWER_BOX.innerHTML = resultsHeadingMsg;
                         }
-                        ANSWER_BOX.appendChild(tempDiv)
+                        ANSWER_BOX.appendChild(tempDiv);
                     }))
                     .then(() => {
                         // check for no results, scroll screen
@@ -583,6 +587,95 @@
                     });
             }
         }
+
+        function answerBoxTemplate(title, authors, ban_info, genres, ratings, summary, queryWords) {
+            // Function to highlight matching words in a string
+            // function highlightMatches(str, words) {
+            //     return str.replace(new RegExp(words.join("|"), "gi"), match => `<span class="highlight">${match}</span>`);
+            // }
+            function highlightMatches(str, words) {
+                const regex = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
+                return str.replace(regex, match => `<span class="highlight">${match}</span>`);
+            }
+
+
+            // Highlight each word in the title and summary separately
+            const highlightedTitle = highlightMatches(title, queryWords);
+            const highlightedSummary = highlightMatches(summary, queryWords);
+
+            return `<div class='output-result'>
+            <h3 class='book-title'>${highlightedTitle}</h3>
+            <p class='book-author'>By ${authors}</p>
+            <p class='book-ratings'>${ratings} stars</p>
+            <p class='book-genres'>${genres}</p>
+            <p class='book-ban-info'>Banned in: ${ban_info}</p>
+            <p class='book-summary'>${highlightedSummary}</p>
+        </div>`;
+        }
+
+        // function performSearch(event, type) {
+        //     if (event.key === "Enter") {
+        //         // Capture the query from the search input box
+        //         const query = type === TITLE_SEARCH ? TITLE_SEARCH_BAR.value : THEME_SEARCH_BAR.value;
+
+        //         // set answer box to waiting
+        //         ANSWER_BOX.innerHTML = WAITING_MSG;
+
+        //         // set results header based on type of search
+        //         var resultsHeadingMsg = "";
+        //         if (type === TITLE_SEARCH) {
+        //             resultsHeadingMsg = "Title search results";
+        //         }
+        //         else {
+        //             resultsHeadingMsg = "Theme search results";
+        //         }
+
+        //         // construct URL for fetch
+        //         var urlPrepend = "/titles?";
+        //         var searchBar = TITLE_SEARCH_BAR;
+
+        //         if (type === TITLE_SEARCH) {
+        //             urlPrepend = "/titles?";
+        //             searchBar = TITLE_SEARCH_BAR;
+        //         }
+        //         else if (type === THEME_SEARCH) {
+        //             searchBar = THEME_SEARCH_BAR;
+        //             if (THEME_SEARCH_TOGGLE.checked == true) {
+        //                 urlPrepend = "/books?";
+        //             }
+        //             else {
+        //                 urlPrepend = "/reviews?";
+        //             }
+        //         }
+
+        //         var url = urlPrepend + new URLSearchParams({ title: searchBar.value, genre: GENRE_BUTTON.value, state: STATE_BUTTON.value }).toString();
+        //         console.log(searchBar.value);
+        //         console.log(GENRE_BUTTON.value);
+        //         toggleVisibility(LOADER);
+        //         // fetch data
+        //         fetch(url)
+        //             .then((response) => response.json())
+        //             .then((data) => data.forEach(row => {
+        //                 let tempDiv = document.createElement("div")
+        //                 tempDiv.innerHTML = answerBoxTemplate(row.title, row.authors, row.ban_info, row.genres, row.ratings, row.summary, query) // Pass the query to the answerBoxTemplate function
+        //                 if (ANSWER_BOX.innerHTML === WAITING_MSG) {
+        //                     ANSWER_BOX.innerHTML = resultsHeadingMsg;
+        //                 }
+        //                 ANSWER_BOX.appendChild(tempDiv)
+        //             }))
+        //             .then(() => {
+        //                 // check for no results, scroll screen
+        //                 if (ANSWER_BOX.innerHTML === WAITING_MSG) {
+        //                     ANSWER_BOX.innerHTML = NO_RESULTS_MSG;
+        //                 }
+        //                 ANSWER_BOX.scrollIntoView({
+        //                     block: "start",
+        //                     behavior: "smooth"
+        //                 });
+        //                 toggleVisibility(LOADER);
+        //             });
+        //     }
+        // }
 
         // function performSearch(event, type) {
         //     if (event.key === "Enter") {

@@ -374,4 +374,4 @@ def reviews_search():
     return theme_search(text, 1 ,state,genre)
 
 if 'DB_NAME' not in os.environ:
-    app.run(debug=True,host="0.0.0.0",port=5002)
+    app.run(debug=True,host="0.0.0.0",port=5000)
