@@ -1,31 +1,90 @@
+/* Animations */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 * {
     box-sizing: border-box;
 }
 
-.full-body-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    flex-direction: column;
+body {
+    margin: 0;
+    padding: 0;
 }
 
-#se {
-    width: 100%;
-    min-height: 100%;
-    max-height: 100%;
-
+header {
     background-image: url("./images/books.jpg");
     background-size: cover;
-
+    height: 100vh;
 }
 
+h2 {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    text-align: center;
+    padding-left: 5px;
+    margin-bottom: 0;
+}
+
+/* Info Boxes */
+.tip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    margin-bottom: 10px;
+}
+
+.tip .tiptext {
+    visibility: hidden;
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 10px 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    font-size: 12px;
+    width: 200px;
+    bottom: 110%;
+    left: 50%;
+    margin-left: -100px;
+}
+
+.tip:hover .tiptext {
+    visibility: visible;
+}
+
+.tipfilter {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tipfilter .tiptext {
+    visibility: hidden;
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 10px 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    font-size: 12px;
+    width: 200px;
+    bottom: 110%;
+    left: 50%;
+    margin-left: -100px;
+}
+
+.tipfilter:hover .tiptext {
+    visibility: visible;
+}
 
 #imagearrow {
     position: absolute;
@@ -45,7 +104,8 @@
 
 #google-4 {
     color: #F4B400;
-    color: black
+    color: black;
+    margin-top: 5px;
 }
 
 #google-3 {
@@ -77,11 +137,43 @@
 
 .hidden {
     display: none !important;
+    visibility: hidden;
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+}
+
+.col-layout {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-child {
+    flex: 1;
 }
 
 /* General */
 
+.description-container {
+    max-width: 1200px;
+    padding: .8%;
+    border-radius: 3px;
+}
+
+.description {
+    margin: 0;
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
 .input-box {
+    background: transparent;
+    border: none;
+
     border-radius: 50px;
     border: 1px solid black;
     display: flex;
@@ -103,23 +195,26 @@
 }
 
 .input-box input {
+    background: transparent;
+    border: none;
+
     width: 100%;
     font-size: 16px;
     border: none;
     outline: 0;
-    color: white;
-
 }
 
 #answer-box {
     width: 700px;
     margin-top: 50px;
+    margin: 0 auto;
 }
 
 #searchboxes {
     display: flex;
     flex-direction: row;
-    align-content: space-between;
+    justify-content: center;
+    align-content: center;
 }
 
 #or-block {
@@ -128,6 +223,10 @@
     margin: auto 0;
 }
 
+.filter-container {
+    margin-left: 5%;
+    text-align: center;
+}
 
 #filter-title-val,
 #filter-book-val,
@@ -144,8 +243,6 @@
 }
 
 .output-result {
-    /* background-color: #f0ecc9; */
-    /* background-color: #ebe4d5; */
     background-color: #f1eee8;
     padding: 5%;
     border-radius: 10px;
@@ -181,21 +278,34 @@
     border-radius: 50%;
     border: none;
     outline: none;
-    padding-left: 10px;
+    /* padding-left: 10px;
     padding-right: 10px;
-    padding-top: 5px;
+    padding-top: 5px; */
     text-align: center;
     justify-content: center;
     color: white;
     background-color: #6d9ce7;
     box-shadow: 0px 5px 5px #bbbcbc;
+    height: 50px;
+    width: 50px;
 }
 
 
-/* Toggle Styling */
+/* Toggle and Based on Styling */
+
+.based-on-container {
+    text-align: center;
+    margin-right: 10%;
+}
 
 .theme-toggle {
     border: 2px solid black;
+}
+
+.theme-toggle:hover {
+    border: 2px dotted #3d3b3b;
+
+    transition-duration: 0s;
 }
 
 .theme-toggle .toggle {
@@ -214,11 +324,6 @@
     height: 0;
 }
 
-.theme-toggle:hover {
-    box-shadow: 5 5 15px black;
-    /* why does this not work? */
-}
-
 .toggle-field {
     padding: 8px 16px;
 
@@ -226,7 +331,7 @@
 
     text-align: center;
 
-    transition: 0.5s;
+    transition: background-image 0.5s
 }
 
 .on {
@@ -252,16 +357,10 @@
     border-radius: 50%;
     display: inline-block;
     animation: spin 1s linear infinite;
-}
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    margin-top: 15%;
+    margin-left: 48%;
+    /* margin-right: 50%; */
 }
 
 .highlight {

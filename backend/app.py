@@ -350,7 +350,7 @@ def home():
 @app.route("/titles")
 def titles_search():
     text = request.args.get("title")
-    print("title search")
+    # print("title search")
     return title_search(text, 0)
 
 @app.route("/books")
@@ -360,11 +360,11 @@ def books_search():
     state = request.args.get("state")
     # do request.args to get the state or genre NOTE: they might be null 
     # print("theme search blurbs")
-    print("Blurbbbbbbbb")
+    # print("Blurbbbbbbbb")
     return theme_search(text, 0,state,genre)
 @app.route("/reviews")
 def reviews_search():
-    print("reviews search")
+    # print("reviews search")
     text = request.args.get("title")
     genre = request.args.get("genre")
     state = request.args.get("state")
