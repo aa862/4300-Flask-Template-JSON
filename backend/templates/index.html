@@ -444,6 +444,7 @@
 
 
     <script>
+        const STOP_WORDS = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"]
         // Constants
 
         // Msg constants
@@ -514,28 +515,6 @@
             THEME_SEARCH_TOGGLE.checked = true;
         }
 
-        // Utility functions
-
-        function answerBoxTemplate(title, authors, ban_info, genres, ratings, summary, query) {
-
-            function highlightMatches(text, query) {
-                const regex = new RegExp(query, 'gi');
-                return text.replace(regex, '<span class="highlight">$&</span>');
-            }
-
-            const highlightedTitle = highlightMatches(title, query);
-            const highlightedSummary = highlightMatches(summary, query);
-
-            return `<div class='output-result'>
-<h3 class='book-title'>${highlightedTitle}</h3>
-<p class='book-author'>By ${authors}</p>
-<p class='book-ratings'>${ratings} stars</p>
-<p class='book-genres'>${genres}</p>
-<p class='book-ban-info'>Banned in: ${ban_info}</p>
-<p class='book-summary'>${highlightedSummary}</p>
-</div>`
-        }
-
         function conditionalSearch(event) {
             var isPublisher = document.getElementById('toggle-checkbox').checked;
             performSearch(event, isPublisher ? 1 : 0);
@@ -580,8 +559,8 @@
                 }
 
                 var url = urlPrepend + new URLSearchParams({ title: searchBar.value, genre: GENRE_BUTTON.value, state: STATE_BUTTON.value }).toString();
-                console.log(searchBar.value);
-                console.log(GENRE_BUTTON.value);
+                // console.log(searchBar.value);
+                // console.log(GENRE_BUTTON.value);
                 toggleVisibility(LOADER);
                 // fetch data
                 fetch(url)
@@ -613,15 +592,30 @@
             // function highlightMatches(str, words) {
             //     return str.replace(new RegExp(words.join("|"), "gi"), match => `<span class="highlight">${match}</span>`);
             // }
+            // console.log("title: " + title);
+            // console.log("authors: " + authors);
+            // console.log("summary: " + summary)
+            // console.log("genres: " + genres);
+            // console.log("ratings: " + ratings);
+            // console.log("finished one book\n");
             function highlightMatches(str, words) {
+                // console.log("str: " + str);
+                // console.log("words: " + words);
                 const regex = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
                 return str.replace(regex, match => `<span class="highlight">${match}</span>`);
             }
 
-
+            queryWordsNoStopWords = []
+            for (var word of queryWords) {
+                if (STOP_WORDS.indexOf(word) == -1) {
+                    queryWordsNoStopWords.push(word);
+                }
+            }
             // Highlight each word in the title and summary separately
-            const highlightedTitle = highlightMatches(title, queryWords);
-            const highlightedSummary = highlightMatches(summary, queryWords);
+            // console.log("highlighing matches function highlightedTitle");
+            const highlightedTitle = highlightMatches(title, queryWordsNoStopWords);
+            // console.log("highlighing matches function highlightedSummary");
+            const highlightedSummary = highlightMatches(summary, queryWordsNoStopWords);
 
             return `<div class='output-result'>
 <h3 class='book-title'>${highlightedTitle}</h3>
